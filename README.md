@@ -20,7 +20,7 @@ We think both features allow users to consume news more effectively and efficien
 Member | Photograph
 --- | ---
 Max Chang| <img src="photos/max_photo.jpg" alt="Max Chang" height="150"> 
-Jaime Deverall | <img src="http://i.imgur.com/VhFoQUj.jpg" alt="Tara Balakrishnan" width="105.3" height="133"> 
+Jaime Deverall | <img src="photos/jaime_photo.jpg" alt="Jaime Deverall" height="150"> 
 Stanley Xie | <img src="photos/stanley_photo.jpg" alt="Stanley Xie" height="150"> 
 
 
@@ -31,7 +31,7 @@ Member | Skills | Personal Traits | Desired Growth | Weaknesses
 --- | --- | --- | --- | ---
 Stanley | AI, Machine Learning, Programming  | Focused, Strong opinions | Rapid prototyping, customer development, programming | Customer development
 Max | Machine Learning, Business/product Strategy | high-level/abstract thinker |  Group Coordination | Sometimes doesn't communicate frequently enough
-Jaime| iOS Development, Data Mining, Machine Learning, AI, Computer Vision | Meticulous, disciplined | Management, collaboration, GitHub | Tends to procrastinate often
+Jaime| Design thinking, Machine Learning, Frontend Design | Communicative, Inclusive, Open-minded | Rapid prototyping, Maintaining a code-base | Multi-tasking, Cramming
 
 
 
