@@ -19,16 +19,16 @@ We think both features allow users to consume news more effectively and efficien
 # Team Members (in alphabetical order)
 Member | Photograph
 --- | ---
-Max Chang| <img src="photos/max_photo.jpg" alt="Max Chang" width="105.3" height="157.5"> 
+Max Chang| <img src="photos/max_photo.jpg" alt="Max Chang" height="150"> 
 Jaime Deverall | <img src="http://i.imgur.com/VhFoQUj.jpg" alt="Tara Balakrishnan" width="105.3" height="133"> 
-Stanley Xie | <img src="photos/stanley_photo.jpg" alt="Stanley Xie" width="204.8" height="136.5"> 
+Stanley Xie | <img src="photos/stanley_photo.jpg" alt="Stanley Xie" height="150"> 
 
 
 
 # Team Skills Matrix:
 
 Member | Skills | Personal Traits | Desired Growth | Weaknesses
---- | --- | --- | --- | --- | ---
+--- | --- | --- | --- | ---
 Stanley | AI, Machine Learning, Programming  | Focused, Strong opinions | Rapid prototyping, customer development, programming | Customer development
 Max | Machine Learning, Business/product Strategy | high-level/abstract thinker |  Group Coordination | Sometimes doesn't communicate frequently enough
 Jaime| iOS Development, Data Mining, Machine Learning, AI, Computer Vision | Meticulous, disciplined | Management, collaboration, GitHub | Tends to procrastinate often
