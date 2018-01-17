@@ -1,9 +1,7 @@
 # Gist 
 
 
-<!--# ![CS210](http://i.imgur.com/WdBU7U5.png (784b) ) | Cargi-->
-<img src="../photos/circlebrush_logo.jpg" alt="Gist logo" width="300">
-<!--<img src="http://i.imgur.com/jHcoBgU.png" alt="cargi logo" width="300">-->
+<img src="photos/circlebrush_logo.jpg" alt="Gist logo" width="300">
 
 We’re making reading news on the internet more efficient. We work to not only help you find which articles are worth your time, but also which parts of the article are most relevant to you, using Machine Learning on top of crowdsourced data. 
 
@@ -21,9 +19,9 @@ We think both features allow users to consume news more effectively and efficien
 # Team Members (in alphabetical order)
 Member | Photograph
 --- | ---
-Max Chang| <img src="../photos/max_photo.jpg" alt="Max Chang" width="105.3" height="157.5"> 
+Max Chang| <img src="photos/max_photo.jpg" alt="Max Chang" width="105.3" height="157.5"> 
 Jaime Deverall | <img src="http://i.imgur.com/VhFoQUj.jpg" alt="Tara Balakrishnan" width="105.3" height="133"> 
-Stanley Xie | <img src="../photos/stanley_photo.jpg" alt="Stanley Xie" width="204.8" height="136.5"> 
+Stanley Xie | <img src="photos/stanley_photo.jpg" alt="Stanley Xie" width="204.8" height="136.5"> 
 
 
 
