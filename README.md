@@ -33,7 +33,8 @@ Stanley | AI, Machine Learning, Programming  | Focused, Strong opinions | Rapid 
 Max | Machine Learning, Business/product Strategy | high-level/abstract thinker |  Group Coordination | Sometimes doesn't communicate frequently enough
 Jaime| iOS Development, Data Mining, Machine Learning, AI, Computer Vision | Meticulous, disciplined | Management, collaboration, GitHub | Tends to procrastinate often
 
-
+# Weekly Logs: 
+Week 1: https://quip.com/lfBPAKTCJW8b
 
 
 
