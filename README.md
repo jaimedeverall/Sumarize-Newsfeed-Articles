@@ -35,7 +35,7 @@ Jaime| Design thinking, Machine Learning, Frontend Design | Communicative, Inclu
 
 # Weekly Logs: 
 Week 1: https://quip.com/lfBPAKTCJW8b
-
+Week 2: https://quip.com/P03GAhX77n3g
 
 
 # Team Communication:
