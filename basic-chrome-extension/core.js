@@ -1,97 +1,42 @@
 const identifier = "gistfacebook"
 
 console.log('reloading')
-window.sessionStorage.clear();
+
 $(".summary_dialog").remove()
 $(".expand_button").remove()
 
+//verify that this code is working.
+function deleteAllAppKeys(){
+  var keysToDelete = []
+  Object.keys(window.sessionStorage).forEach(function(key){
+    if(key.includes(identifier)){ //the key belongs to our extension
+      keysToDelete.push(key)
+    }
+  });
+  console.log('reloading')
+  console.log(keysToDelete.length)
+  for(i=0; i<keysToDelete.length; i++){
+    window.sessionStorage.removeItem(keysToDelete[i])
+  }
+}
+deleteAllAppKeys();
 
-// var keysToDelete = []
-
-// Object.keys(window.sessionStorage).forEach(function(key){
-//   console.log('reloading', key)
-//   if(key.includes(identifier)){ //the key belongs to our extension
-//     const id = key.substring(identifier.length)
-//     var storyOptions = $(`a[id='${id}'`).first()
-//     if(storyOptions === undefined || !isElementInViewport(storyOptions)){
-//       console.log(storyOptions)
-//       console.log(key)
-//       keysToDelete.push(key)
-//     }
-//   }
+// $(window).scroll(function() {
+//   doSomething();
 // });
 
-// for (var i = 0; i < keysToDelete.length; i++) {
-//   window.sessionStorage.removeItem(keysToDelete[i])
-// }
+// $(window).resize(function() {
+//   doSomething();
+// });
 
-//console.log('reloading')
-//console.log(window.sessionStorage.)
-//Execute once at the start before the user has started to scroll.
-
-$(window).scroll(function() {
+$(window).bind('scroll resize', function(e) {
   doSomething();
 });
 
-// $(window).scroll(function() {
-//   var map = {}
-//   Object.keys(window.sessionStorage).forEach(function(key){
-//     console.log(key)
-//     if(key.includes(identifier)){ //the key belongs to our extension
-//       const id = key.substring(identifier.length)
-//       var storyOptions = $(`a[id='${id}'`).get(0)
-//       if(storyOptions !== undefined && isElementInViewport(storyOptions)){
-//         map[key] = window.sessionStorage.getItem(key)
-//       }
-//     }
-//   });
-//   console.log(Object.keys(map).length)
-//   window.sessionStorage.clear()
-//   Object.keys(map).forEach(function(key){
-//     console.log(key)
-//     window.sessionStorage.setItem(key, map[key]);
-//   });
-//   $(".summary_dialog").remove()
-//   $(".expand_button").remove()
-//   $("a[aria-label='Story options'").each(function(index, element){
-//     const key = identifier + element.id
-//     const value = window.sessionStorage.getItem(key)
-//     if(isElementInViewport(element)){
-//       if(value === null){
-//         window.sessionStorage.setItem(key, 'hidden')
-//       }
-//       var position = $(element).offset();
-//       position.left -= 30
-//       position.top -= 3
-//       var expandButton = createExpandButton();
-//       var dialog = createDialog();
-//       expandButton.onclick = handleExpandButtonClick
-//       document.body.appendChild(expandButton);
-//       document.body.appendChild(dialog);
-//       $(expandButton).css(position);
-//       $(dialog).css({left: position.left, top: position.top, visiblility: window.sessionStorage.getItem(key)});
-//     }
-//   })
-// })
+//actually it's fine not to delete anything because it's caching. just make sure to delete
+//all relevant data during page reloads. and this is where the code may be fucking up.
 
 function doSomething() {
-  var map = {}
-  Object.keys(window.sessionStorage).forEach(function(key){
-    console.log(key)
-    if(key.includes(identifier)){ //the key belongs to our extension
-      const id = key.substring(identifier.length)
-      var storyOptions = $(`a[id='${id}'`).get(0)
-      if(storyOptions !== undefined && isElementInViewport(storyOptions)){
-        map[key] = window.sessionStorage.getItem(key)
-      }
-    }
-  });
-  console.log(Object.keys(map).length)
-  window.sessionStorage.clear()
-  Object.keys(map).forEach(function(key){
-    console.log(key)
-    window.sessionStorage.setItem(key, map[key]);
-  });
   $(".summary_dialog").remove()
   $(".expand_button").remove()
   $("a[aria-label='Story options'").each(function(index, element){
@@ -104,7 +49,7 @@ function doSomething() {
       }
       var position = $(element).offset();
       var expandButtonPosition = {left: position.left - 30, top: position.top - 3}
-      var dialogPosition = {left: position.left - 30, top: position.top + 15}
+      var dialogPosition = {left: position.left - 52, top: position.top + 23}
       var expandButton = createExpandButton('button' + element.id);
       var dialog = createDialog('dialog' + element.id);
       expandButton.onclick = function(e){
@@ -113,7 +58,8 @@ function doSomething() {
       document.body.appendChild(expandButton);
       document.body.appendChild(dialog);
       $(expandButton).css(expandButtonPosition);
-      $(dialog).css({left: dialogPosition.left, top: dialogPosition.top, visiblility: value});
+      console.log(value);
+      $(dialog).css({left: dialogPosition.left, top: dialogPosition.top, visibility: value});
     }
   })
 }
@@ -122,14 +68,14 @@ function handleExpandButtonClick(event, id){
   var dialog = $(`#dialog${id}`).get(0)
   if(dialog !== undefined){
     console.log(dialog.style.visibility)
-    if(dialog.style.visibility === "hidden" || dialog.style.visibility === ""){
-      console.log('making visible');
-      dialog.style.visibility = 'visible'
-      window.sessionStorage.setItem(identifier + id, "visible");
-    }else{
+    if(dialog.style.visibility === "visible"){
       console.log('making hidden')
       dialog.style.visibility = 'hidden'
       window.sessionStorage.setItem(identifier + id, "hidden");
+    }else{
+      console.log('making visible');
+      dialog.style.visibility = 'visible'
+      window.sessionStorage.setItem(identifier + id, "visible");
     }
   }
 }
@@ -149,8 +95,8 @@ function createExpandButton(id){
 function createDialog(id){
   var dialog = document.createElement('img')
   var url = chrome.runtime.getURL('images/dialog.png')
-  dialog.style.height = '75px';
-  dialog.style.width = '100px';
+  dialog.style.height = '200px';
+  dialog.style.width = '350px';
   dialog.setAttribute('src', url);
   dialog.setAttribute('id', id)
   dialog.setAttribute('class', 'summary_dialog');
@@ -166,35 +112,6 @@ function isElementInViewport(element){
   return elementBottom > viewportTop && elementTop < viewportBottom;
 };
 
-// function isElementInViewport (el) {
-//   var rect = el.getBoundingClientRect();
-//   return (
-//     rect.top >= 0 &&
-//     rect.left >= 0 &&
-//     rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&/*or $(window).height() */
-//     rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
-//   );
-// }
-
-// Mouse listener for any move event on the current document.
-// document.addEventListener('mousemove', function (e) {
-//   var srcElement = e.srcElement;
-//   var link = null;
-//   if(link == null && srcElement.nodeName == 'A' && isNews(srcElement.href)){
-//     link = srcElement
-//     var selection = "Hi this is a test"//window.getSelection().toString();
-//     renderBubble(e.clientX, e.clientY, selection);
-//   }else{
-//     link = null
-//     bubbleDOM.style.visibility = 'hidden';
-//   }
-// }, false);
-
 function isNews(url){
   return url != null && url.includes("vox");
 }
-
-// Close the bubble when we click on the screen.
-// document.addEventListener('mousedown', function (e) {
-//   bubbleDOM.style.visibility = 'hidden';
-// }, false);
