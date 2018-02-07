@@ -115,13 +115,14 @@ function createExpandButton(id){
 }
 
 function createDialog(id){
-  var dialog = document.createElement('img')
+  var dialog = document.createElement('div')
   var url = chrome.runtime.getURL('images/dialog.png')
   dialog.style.height = '200px';
   dialog.style.width = '350px';
-  dialog.setAttribute('src', url);
-  dialog.setAttribute('id', id)
+  dialog.setAttribute('id', id);
   dialog.setAttribute('class', 'summary_dialog');
+  dialog.style.backgroundImage = "http://www.clker.com/cliparts/c/2/4/3/1194986855125869974rubik_s_cube_random_petr_01.svg.med.png";
+  console.log(dialog.style)
   return dialog
 }
 

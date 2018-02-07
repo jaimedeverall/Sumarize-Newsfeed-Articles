@@ -6,6 +6,7 @@
 }
 
 .summary_dialog {
+  display: block;
   visibility: hidden;
   position: absolute;
   top: 0;
