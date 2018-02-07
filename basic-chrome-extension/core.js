@@ -13,25 +13,45 @@ function deleteAllAppKeys(){
       keysToDelete.push(key)
     }
   });
-  console.log('reloading')
-  console.log(keysToDelete.length)
   for(i=0; i<keysToDelete.length; i++){
     window.sessionStorage.removeItem(keysToDelete[i])
   }
 }
 deleteAllAppKeys();
 
-// $(window).scroll(function() {
-//   doSomething();
-// });
-
-// $(window).resize(function() {
-//   doSomething();
-// });
-
 $(window).bind('scroll resize', function(e) {
   doSomething();
 });
+
+function findNewsLink(){
+  $("a[aria-label='Story options'").each(function(index, element){
+    if(isElementInViewport(element)){
+      var overall = $(storyOptionsElement).parent().parent().parent().get(0);
+      console.log(overall)
+      var newsLinkElement = $(overall).find("a[class='_52c6']").get(0)
+      if(newsLinkElement !== undefined){
+        const url = newsLinkElement.href
+        if(isNews(url)){
+          console.log(element)
+          console.log(url)
+        }
+      }
+    }
+  })
+}
+
+//This function will return the news url if it is a story otherwise it will return null
+function getNewsUrl(storyOptionsElement){
+  var overall = $(storyOptionsElement).parent().parent().parent().get(0);
+  var newsLinkElement = $(overall).find("a[class='_52c6']").get(0)
+  if(newsLinkElement !== undefined){
+    const url = newsLinkElement.href
+    if(isNews(url)){
+      return url
+    }
+  }
+  return null
+}
 
 //actually it's fine not to delete anything because it's caching. just make sure to delete
 //all relevant data during page reloads. and this is where the code may be fucking up.
@@ -42,7 +62,9 @@ function doSomething() {
   $("a[aria-label='Story options'").each(function(index, element){
     const key = identifier + element.id
     var value = window.sessionStorage.getItem(key)
-    if(isElementInViewport(element)){
+    const url = getNewsUrl(element)
+    if(isElementInViewport(element) && url !== null){
+      console.log(url)
       if(value === null){
         window.sessionStorage.setItem(key, 'hidden')
         value = 'hidden'
@@ -113,5 +135,5 @@ function isElementInViewport(element){
 };
 
 function isNews(url){
-  return url != null && url.includes("vox");
+  return url !== null && url.includes("vox");
 }
