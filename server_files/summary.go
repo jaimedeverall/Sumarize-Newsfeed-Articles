@@ -1,16 +1,36 @@
 package main
 
 import "os/exec"
+import "encoding/json"
+import "fmt"
 
 func retrieveSummary(article_url string) map[string]interface{} {
 	cmd := exec.Command("./extraction_script.py", article_url) 
-	summary_bytes, err := cmd.Output()
-	summary := string(summary_bytes)
+	summary_bytes, _ := cmd.Output()
+	//summary_string := string(summary_bytes)
+	//article_data := summary_bytes 
 
-	if (err != nil) {
-		summary = "Unable to generate summary."
-	}
-	return map[string]interface{}{"author_reputability": 0.7, "time_to_read": 0.5, "recap": summary}
+	raw := make( map[string]string )
+	valid := json.Valid(summary_bytes)
+
+	fmt.Println(valid)
+	json.Unmarshal(summary_bytes, &raw)
+
+	var newArticle Article
+
+	newArticle.title = raw["title"]
+
+	newArticle.summary = raw["summary"]
+	newArticle.text = raw["text"]
+	//newArticle.authors = raw["authors"].(string)
+	newArticle.url = raw["url"]
+	newArticle.publish_date = raw["publish_date"]
+
+	newArticle.reputability = 0 
+	newArticle.time_to_read = 0
+
+	return map[string]interface{}{"author_reputability": newArticle.reputability, "time_to_read": newArticle.time_to_read, 
+				"recap": newArticle.summary}
 }
 
 func writeMetadata(metadata Metadata) {
