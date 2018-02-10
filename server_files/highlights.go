@@ -1,12 +1,20 @@
 package main
 
+import "encoding/json"
+import "os/exec"
 
 func retrieveHighlights(article_url string) map[int]interface{}{ 
 	// find highlights. 
 	
+	// grab link, extract highlights 
+	cmd := exec.Command("./highlights_script.py", article_url) 
+	summary_bytes, _ := cmd.Output()
 
+	raw := make( map[string]string )
 
-	return map[int]interface{}{1: 0.3, 10: 0.6, 15: 0.8, 20: 0.3, 25: 0.6}
+	json.Unmarshal(summary_bytes, &raw)
+
+	return raw
 }
 
 func insertNewHighlights(article_url string, user_id string, line_number int) {
