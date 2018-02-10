@@ -143,6 +143,9 @@ class Article(object):
         # A property dict for users to store custom data.
         self.additional_data = {}
 
+        # paragraph highlights
+        self.highlights = {}
+
     def build(self):
         """Build a lone article from a URL independent of the source (newspaper).
         Don't normally call this method b/c it's good to multithread articles
@@ -355,6 +358,10 @@ class Article(object):
         summary_sents = nlp.summarize(title=self.title, text=self.text, max_sents=max_sents)
         summary = '\n'.join(summary_sents)
         self.set_summary(summary)
+
+        highlights = nlp.highlights(title=self.title, text=self.text, max_sents=max_sents)
+        print("highlights")
+        self.highlights = highlights
 
     def get_parse_candidate(self):
         """A parse candidate is a wrapper object holding a link hash of this
