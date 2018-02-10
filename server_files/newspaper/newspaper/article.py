@@ -144,6 +144,7 @@ class Article(object):
         self.additional_data = {}
 
         # paragraph highlights
+        print("fuck me")
         self.highlights = {}
 
     def build(self):

@@ -3,14 +3,14 @@ package main
 import "encoding/json"
 import "os/exec"
 
-func retrieveHighlights(article_url string) map[int]interface{}{ 
+func retrieveHighlights(article_url string) map[string]interface{}{ 
 	// find highlights. 
 	
 	// grab link, extract highlights 
 	cmd := exec.Command("./highlights_script.py", article_url) 
 	summary_bytes, _ := cmd.Output()
 
-	raw := make( map[string]string )
+	raw := make( map[string]interface{} )
 
 	json.Unmarshal(summary_bytes, &raw)
 
