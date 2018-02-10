@@ -144,7 +144,6 @@ class Article(object):
         self.additional_data = {}
 
         # paragraph highlights
-        print("fuck me")
         self.highlights = {}
 
     def build(self):
@@ -347,7 +346,7 @@ class Article(object):
         """
         self.throw_if_not_downloaded_verbose()
         self.throw_if_not_parsed_verbose()
-        
+
         nlp.load_stopwords(self.config.get_language())
         text_keyws = list(nlp.keywords(self.text).keys())
         title_keyws = list(nlp.keywords(self.title).keys())
@@ -361,7 +360,6 @@ class Article(object):
         self.set_summary(summary)
 
         highlights = nlp.highlights(title=self.title, text=self.text, max_sents=max_sents)
-        print("highlights")
         self.highlights = highlights
 
     def get_parse_candidate(self):
@@ -536,7 +534,7 @@ class Article(object):
             raise ArticleException()
 
     def throw_if_not_parsed_verbose(self):
-        """Parse `is_parsed` status -> log readable status 
+        """Parse `is_parsed` status -> log readable status
         -> maybe throw ArticleException
         """
         if not self.is_parsed:

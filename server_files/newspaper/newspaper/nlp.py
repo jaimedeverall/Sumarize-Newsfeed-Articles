@@ -20,11 +20,11 @@ ideal = 20.0
 stopwords = set()
 
 def load_stopwords(language):
-    """ 
+    """
     Loads language-specific stopwords for keyword selection
     """
     global stopwords
-    
+
     # stopwords for nlp in English are not the regular stopwords
     # to pass the tests
     # can be changed with the tests
@@ -35,8 +35,8 @@ def load_stopwords(language):
                                   'stopwords-{}.txt'.format(language))
     with open(stopwordsFile, 'r', encoding='utf-8') as f:
         stopwords.update(set([w.strip() for w in f.readlines()]))
-        
-        
+
+
 def summarize(url='', title='', text='', max_sents=5):
     if not text or not title or max_sents <= 0:
         return []
@@ -48,40 +48,38 @@ def summarize(url='', title='', text='', max_sents=5):
 
     # Score sentences, and use the top 5 or max_sents sentences
     ranks = score(sentences, titleWords, keys).most_common(max_sents)
-    print("summarized ranks", ranks)
     for rank in ranks:
         summaries.append(rank[0])
     summaries.sort(key=lambda summary: summary[0])
     return [summary[1] for summary in summaries]
 
-def highlights(url='', title='', text='', max_sents=5): 
-    # separate by paragraph 
-    # define paragraph by '\n' 
+def highlights(url='', title='', text='', max_sents=5):
+    # separate by paragraph
+    # define paragraph by '\n'
     if not text or not title or max_sents <= 0:
         return []
 
-    summaries = [] 
-    paragraphs = text.split('\n') 
-    keys = keywords(text) 
-    titleWords = split_words(title) 
+    summaries = []
+    paragraphs = text.split('\n')
+    keys = keywords(text)
+    titleWords = split_words(title)
 
-    scores = {} 
+    scores = {}
 
-    for count, paragraph in enumerate(paragraphs): 
+    for count, paragraph in enumerate(paragraphs):
         sentences = split_sentences(paragraph)
         ranks = score_highlights(sentences, titleWords, keys)
 
         sum = 0.0
-        for element in ranks: 
+        for element in ranks:
             sum += element
-        if len(ranks) == 0: 
+        if len(ranks) == 0:
             scores[count] = 0
-        else: 
+        else:
             scores[count] = sum / float(len(ranks))
-        print(scores)
     return scores
 
-def score_highlights(sentences, titleWords, keywords): 
+def score_highlights(sentences, titleWords, keywords):
     senSize = len(sentences)
     ranks = []
     for i, s in enumerate(sentences):

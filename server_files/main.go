@@ -118,5 +118,6 @@ func main() {
 	http.HandleFunc("/highlights", highlightsHandler) 
 	http.HandleFunc("/metadata", metadataHandler) 
 	fmt.Printf("Serving web pages on port 8080...\n")
-	http.ListenAndServe(":8080", nil) 
+	error := http.ListenAndServe(":8080", nil)
+	fmt.Println(error) 
 }
