@@ -59,7 +59,7 @@ function getNewsUrl(storyOptionsElement){
 function doSomething() {
   $(".summary_dialog").remove()
   $(".expand_button").remove()
-  $("a[aria-label='Story options'").each(function(index, element){
+  $("a[aria-label='Story options']").each(function(index, element){
     const key = identifier + element.id
     var value = window.sessionStorage.getItem(key)
     const url = getNewsUrl(element)
@@ -70,36 +70,52 @@ function doSomething() {
         value = 'hidden'
       }
       var position = $(element).offset();
-      var expandButtonPosition = {left: position.left - 30, top: position.top - 3}
-      var dialogPosition = {left: position.left - 52, top: position.top + 23}
+      //var expandButtonPosition = {left: position.left - 30, top: position.top - 3}
+      //var dialogPosition = {left: position.left - 52, top: position.top + 23}
       var expandButton = createExpandButton('button' + element.id);
       var dialog = createDialog('dialog' + element.id);
+      var summaryDiv = createSummaryDiv('summary' + element.id);
+      //var summaryDivPosition = {left: position.left - 45, top: position.top + 40}
       expandButton.onclick = function(e){
         handleExpandButtonClick(e, element.id);
       }
       document.body.appendChild(expandButton);
       document.body.appendChild(dialog);
-      $(expandButton).css(expandButtonPosition);
-      console.log(value);
-      $(dialog).css({left: dialogPosition.left, top: dialogPosition.top, visibility: value});
+      document.body.appendChild(summaryDiv);
+      //$(expandButton).css(expandButtonPosition);
+      positionExpandButton(expandButton, position)
+      positionDialog(dialog, position, value)
+      positionSummaryDiv(summaryDiv, position, value)
+      //$(dialog).css({left: dialogPosition.left, top: dialogPosition.top, visibility: value});
+      //$(summaryDiv).css({left: summaryDivPosition.left, top: summaryDivPosition.top, visibility: value});
     }
   })
 }
 
+function positionExpandButton(expandButton, position){
+  $(expandButton).css({left: position.left - 30, top: position.top - 3})
+}
+
+function positionDialog(dialog, position, visibility){
+  $(dialog).css({left: position.left - 52, top: position.top + 23, visibility: visibility})
+}
+
+function positionSummaryDiv(summaryDiv, position, visibility){
+  $(summaryDiv).css({left: position.left - 45, top: position.top + 40, visibility: visibility})
+}
+
 function handleExpandButtonClick(event, id){
-  var dialog = $(`#dialog${id}`).get(0)
-  if(dialog !== undefined){
-    console.log(dialog.style.visibility)
-    if(dialog.style.visibility === "visible"){
-      console.log('making hidden')
-      dialog.style.visibility = 'hidden'
-      window.sessionStorage.setItem(identifier + id, "hidden");
-    }else{
-      console.log('making visible');
-      dialog.style.visibility = 'visible'
-      window.sessionStorage.setItem(identifier + id, "visible");
+  $(".summary_dialog").each(function(index, element){
+    if(element.id !== undefined && element.id.includes(id)){
+      if(element.style.visibility == "visible"){
+        element.style.visibility = "hidden"
+        window.sessionStorage.setItem(identifier + id, "hidden");
+      }else{
+        element.style.visibility = "visible"
+        window.sessionStorage.setItem(identifier + id, "visible");
+      }
     }
-  }
+  })
 }
 
 function createExpandButton(id){
@@ -115,15 +131,25 @@ function createExpandButton(id){
 }
 
 function createDialog(id){
-  var dialog = document.createElement('div')
+  var dialog = document.createElement('img')
   var url = chrome.runtime.getURL('images/dialog.png')
   dialog.style.height = '200px';
   dialog.style.width = '350px';
   dialog.setAttribute('id', id);
   dialog.setAttribute('class', 'summary_dialog');
-  dialog.style.backgroundImage = "http://www.clker.com/cliparts/c/2/4/3/1194986855125869974rubik_s_cube_random_petr_01.svg.med.png";
-  console.log(dialog.style)
+  dialog.setAttribute('src', url)
   return dialog
+}
+
+function createSummaryDiv(id){
+  var summaryDiv = document.createElement('div')
+  summaryDiv.style.height = '180px';
+  summaryDiv.style.width = '320px';
+  summaryDiv.setAttribute('id', id);
+  summaryDiv.setAttribute('class', 'summary_div');
+  summaryDiv.setAttribute('class', 'summary_dialog');
+  summaryDiv.innerHTML = "This is an absolute test";
+  return summaryDiv
 }
 
 //Found on https://medium.com/talk-like/detecting-if-an-element-is-in-the-viewport-jquery-a6a4405a3ea2
