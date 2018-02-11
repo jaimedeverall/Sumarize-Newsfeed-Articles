@@ -59,6 +59,7 @@ func summaryHandler(w http.ResponseWriter, r *http.Request) {
 
 
 func highlightsHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Received highlights request")
 	article_url := r.FormValue("article_url") 
 	if (len(article_url) == 0) {
 		http.Error(w, "Please pass in an article_url", http.StatusBadRequest)
@@ -117,5 +118,6 @@ func main() {
 	http.HandleFunc("/highlights", highlightsHandler) 
 	http.HandleFunc("/metadata", metadataHandler) 
 	fmt.Printf("Serving web pages on port 8080...\n")
-	http.ListenAndServe(":8080", nil) 
+	error := http.ListenAndServe(":8080", nil)
+	fmt.Println(error) 
 }

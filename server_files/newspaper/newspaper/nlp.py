@@ -20,11 +20,11 @@ ideal = 20.0
 stopwords = set()
 
 def load_stopwords(language):
-    """ 
+    """
     Loads language-specific stopwords for keyword selection
     """
     global stopwords
-    
+
     # stopwords for nlp in English are not the regular stopwords
     # to pass the tests
     # can be changed with the tests
@@ -35,8 +35,8 @@ def load_stopwords(language):
                                   'stopwords-{}.txt'.format(language))
     with open(stopwordsFile, 'r', encoding='utf-8') as f:
         stopwords.update(set([w.strip() for w in f.readlines()]))
-        
-        
+
+
 def summarize(url='', title='', text='', max_sents=5):
     if not text or not title or max_sents <= 0:
         return []
@@ -53,6 +53,48 @@ def summarize(url='', title='', text='', max_sents=5):
     summaries.sort(key=lambda summary: summary[0])
     return [summary[1] for summary in summaries]
 
+def highlights(url='', title='', text='', max_sents=5):
+    # separate by paragraph
+    # define paragraph by '\n'
+    if not text or not title or max_sents <= 0:
+        return []
+
+    summaries = []
+    paragraphs = text.split('\n')
+    keys = keywords(text)
+    titleWords = split_words(title)
+
+    scores = {}
+
+    for count, paragraph in enumerate(paragraphs):
+        sentences = split_sentences(paragraph)
+        ranks = score_highlights(sentences, titleWords, keys)
+
+        sum = 0.0
+        for element in ranks:
+            sum += element
+        if len(ranks) == 0:
+            scores[count] = 0
+        else:
+            scores[count] = sum / float(len(ranks))
+    return scores
+
+def score_highlights(sentences, titleWords, keywords):
+    senSize = len(sentences)
+    ranks = []
+    for i, s in enumerate(sentences):
+        sentence = split_words(s)
+        titleFeature = title_score(titleWords, sentence)
+        sentenceLength = length_score(len(sentence))
+        sentencePosition = sentence_position(i + 1, senSize)
+        sbsFeature = sbs(sentence, keywords)
+        dbsFeature = dbs(sentence, keywords)
+        frequency = (sbsFeature + dbsFeature) / 2.0 * 10.0
+        # Weighted average of scores from four categories
+        totalScore = (titleFeature*1.5 + frequency*2.0 +
+                      sentenceLength*1.0 + sentencePosition*1.0)/4.0
+        ranks.append(totalScore)
+    return ranks
 
 def score(sentences, titleWords, keywords):
     """Score sentences based on different features

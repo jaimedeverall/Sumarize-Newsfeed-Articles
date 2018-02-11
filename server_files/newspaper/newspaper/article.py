@@ -143,6 +143,9 @@ class Article(object):
         # A property dict for users to store custom data.
         self.additional_data = {}
 
+        # paragraph highlights
+        self.highlights = {}
+
     def build(self):
         """Build a lone article from a URL independent of the source (newspaper).
         Don't normally call this method b/c it's good to multithread articles
@@ -343,7 +346,7 @@ class Article(object):
         """
         self.throw_if_not_downloaded_verbose()
         self.throw_if_not_parsed_verbose()
-        
+
         nlp.load_stopwords(self.config.get_language())
         text_keyws = list(nlp.keywords(self.text).keys())
         title_keyws = list(nlp.keywords(self.title).keys())
@@ -355,6 +358,9 @@ class Article(object):
         summary_sents = nlp.summarize(title=self.title, text=self.text, max_sents=max_sents)
         summary = '\n'.join(summary_sents)
         self.set_summary(summary)
+
+        highlights = nlp.highlights(title=self.title, text=self.text, max_sents=max_sents)
+        self.highlights = highlights
 
     def get_parse_candidate(self):
         """A parse candidate is a wrapper object holding a link hash of this
@@ -528,7 +534,7 @@ class Article(object):
             raise ArticleException()
 
     def throw_if_not_parsed_verbose(self):
-        """Parse `is_parsed` status -> log readable status 
+        """Parse `is_parsed` status -> log readable status
         -> maybe throw ArticleException
         """
         if not self.is_parsed:
