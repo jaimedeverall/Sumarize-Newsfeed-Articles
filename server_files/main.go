@@ -45,6 +45,8 @@ func formatRequest(r *http.Request) string {
 func summaryHandler(w http.ResponseWriter, r *http.Request) {
 	if (r.Method == "GET") {
 		article_url := r.FormValue("article_url")
+		article_url = article_url[len("https://l.facebook.com/l.php?u="):]
+		fmt.Printf(article_url)
 		if (len(article_url) == 0) {
 			http.Error(w, "Please pass in an article_url", http.StatusBadRequest)
 		} else {
