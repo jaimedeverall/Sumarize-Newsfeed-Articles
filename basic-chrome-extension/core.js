@@ -41,6 +41,7 @@ function findNewsLink(){
 }
 
 //This function will return the news url if it is a story otherwise it will return null
+//This function is not currently used.
 function getNewsUrl(storyOptionsElement){
   var overall = $(storyOptionsElement).parent().parent().parent().get(0);
   var newsLinkElement = $(overall).find("a[class='_52c6']").get(0)
@@ -53,6 +54,15 @@ function getNewsUrl(storyOptionsElement){
   return null
 }
 
+function isNewsCard(storyOptionsElement){
+  var overall = $(storyOptionsElement).parent().parent().parent().get(0);
+  var newsLinkElement = $(overall).find("a[class='_52c6']").get(0)
+  if(newsLinkElement !== undefined){
+    return true
+  }
+  return false
+}
+
 //actually it's fine not to delete anything because it's caching. just make sure to delete
 //all relevant data during page reloads. and this is where the code may be fucking up.
 
@@ -62,32 +72,31 @@ function doSomething() {
   $("a[aria-label='Story options']").each(function(index, element){
     const key = identifier + element.id
     var value = window.sessionStorage.getItem(key)
-    const url = getNewsUrl(element)
-    if(isElementInViewport(element) && url !== null){
-      console.log(url)
+    if(isElementInViewport(element) && isNewsCard(element)){
       if(value === null){
         window.sessionStorage.setItem(key, 'hidden')
         value = 'hidden'
       }
       var position = $(element).offset();
-      //var expandButtonPosition = {left: position.left - 30, top: position.top - 3}
-      //var dialogPosition = {left: position.left - 52, top: position.top + 23}
+    
       var expandButton = createExpandButton('button' + element.id);
       var dialog = createDialog('dialog' + element.id);
       var summaryDiv = createSummaryDiv('summary' + element.id);
-      //var summaryDivPosition = {left: position.left - 45, top: position.top + 40}
+      var metricsDiv = createMetricsDiv('metrics' + element.id);
+
       expandButton.onclick = function(e){
         handleExpandButtonClick(e, element.id);
       }
+
       document.body.appendChild(expandButton);
       document.body.appendChild(dialog);
       document.body.appendChild(summaryDiv);
-      //$(expandButton).css(expandButtonPosition);
+      document.body.appendChild(metricsDiv);
+  
       positionExpandButton(expandButton, position)
       positionDialog(dialog, position, value)
       positionSummaryDiv(summaryDiv, position, value)
-      //$(dialog).css({left: dialogPosition.left, top: dialogPosition.top, visibility: value});
-      //$(summaryDiv).css({left: summaryDivPosition.left, top: summaryDivPosition.top, visibility: value});
+      positionMetricsDiv(metricsDiv, position, value)
     }
   })
 }
@@ -101,7 +110,11 @@ function positionDialog(dialog, position, visibility){
 }
 
 function positionSummaryDiv(summaryDiv, position, visibility){
-  $(summaryDiv).css({left: position.left - 45, top: position.top + 40, visibility: visibility})
+  $(summaryDiv).css({left: position.left - 52, top: position.top + 110, visibility: visibility})
+}
+
+function positionMetricsDiv(metricsDiv, position, visibility){
+  $(metricsDiv).css({left: position.left - 52, top: position.top + 50, visibility: visibility})
 }
 
 function handleExpandButtonClick(event, id){
@@ -133,8 +146,8 @@ function createExpandButton(id){
 function createDialog(id){
   var dialog = document.createElement('img')
   var url = chrome.runtime.getURL('images/dialog.png')
-  dialog.style.height = '200px';
-  dialog.style.width = '350px';
+  dialog.style.height = '300px';
+  dialog.style.width = '400px';
   dialog.setAttribute('id', id);
   dialog.setAttribute('class', 'summary_dialog');
   dialog.setAttribute('src', url)
@@ -143,13 +156,24 @@ function createDialog(id){
 
 function createSummaryDiv(id){
   var summaryDiv = document.createElement('div')
-  summaryDiv.style.height = '180px';
-  summaryDiv.style.width = '320px';
+  summaryDiv.style.height = '200px';
+  summaryDiv.style.width = '400px';
   summaryDiv.setAttribute('id', id);
   summaryDiv.setAttribute('class', 'summary_div');
   summaryDiv.setAttribute('class', 'summary_dialog');
-  summaryDiv.innerHTML = "This is an absolute test";
+  summaryDiv.innerHTML = "Knowing that millions of people around the world would be watching in person and on television and expecting great things from him — at least one more gold medal for America, if not another world record — during this, his fourth and surely his last appearance in the World Olympics, and realizing that his legs could no longer carry him down the runway with the same blazing speed and confidence in making a huge, eye-popping leap that they were capable of a few years ago when he set world records in the 100-meter dash and in the 400-meter relay and won a silver medal in the long jump, the renowned sprinter and track-and-field personality Carl Lewis, who had known pressure from fans and media before but never, even as a professional runner, this kind of pressure, made only a few appearances in races during the few months";
   return summaryDiv
+}
+
+function createMetricsDiv(id){
+  var metricsDiv = document.createElement('div')
+  metricsDiv.style.height = '70px';
+  metricsDiv.style.width = '400px';
+  metricsDiv.setAttribute('id', id);
+  metricsDiv.setAttribute('class', 'summary_metrics');
+  metricsDiv.setAttribute('class', 'summary_dialog');
+  metricsDiv.innerHTML = "Average Percentage Read: <br/> Author Reputability: <br/> Read Time: <br/>";
+  return metricsDiv
 }
 
 //Found on https://medium.com/talk-like/detecting-if-an-element-is-in-the-viewport-jquery-a6a4405a3ea2

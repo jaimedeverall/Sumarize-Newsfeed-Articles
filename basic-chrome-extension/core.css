@@ -15,4 +15,10 @@
 
 .summary_div {
   display: block;
+  padding: 10;
+}
+
+.summary_metrics {
+  display: block;
+  padding: 10;
 }
