@@ -26,8 +26,7 @@ $(window).bind('scroll resize', function(e) {
 function findNewsLink(){
   $("a[aria-label='Story options'").each(function(index, element){
     if(isElementInViewport(element)){
-      var overall = $(storyOptionsElement).parent().parent().parent().get(0);
-      console.log(overall)
+      var overall = $(element).parent().parent().parent().get(0);
       var newsLinkElement = $(overall).find("a[class='_52c6']").get(0)
       if(newsLinkElement !== undefined){
         const url = newsLinkElement.href
