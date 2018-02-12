@@ -1,11 +1,12 @@
 const identifier = "gistfacebook"
 
-console.log('reloading')
+console.log('reloading');
 
 $(".summary_dialog").remove()
 $(".expand_button").remove()
 
-//verify that this code is working.
+//Currently not using this code, but should integrate eventually to prevent sessionStorage from
+//getting too large.
 function deleteAllAppKeys(){
   var keysToDelete = []
   Object.keys(window.sessionStorage).forEach(function(key){
@@ -17,7 +18,6 @@ function deleteAllAppKeys(){
     window.sessionStorage.removeItem(keysToDelete[i])
   }
 }
-deleteAllAppKeys();
 
 $(window).bind('scroll resize', function(e) {
   doSomething();
@@ -47,7 +47,7 @@ function getNewsUrl(storyOptionsElement){
   var newsLinkElement = $(overall).find("a[class='_52c6']").get(0)
   if(newsLinkElement !== undefined){
     const url = newsLinkElement.href
-    if(isNews(url)){
+    if(url !== undefined && url !== null){
       return url
     }
   }
@@ -63,13 +63,18 @@ function isNewsCard(storyOptionsElement){
   return false
 }
 
-function getDetails(url){
-  console.log('hi')
+function saveDetails(key, obj, url){
   chrome.runtime.sendMessage({endpoint: "summary", article_url: url}, function(response) {
-    console.log(response);
+    responseObj = JSON.parse(response);
+    obj.author_reputability = responseObj.author_reputability;
+    obj.time_to_read = responseObj.time_to_read;
+    obj.recap = responseObj.recap;
+    window.sessionStorage.setItem(key, JSON.stringify(obj));
+    doSomething();
   });
 }
 
+//"author_reputability":0,"recap":"","time_to_read":0.0036363636363636364
 //getDetails("https://www.vox.com/2018/2/6/16982370/trump-asked-the-pentagon-start-planning-a-military-parade");
 
 //actually it's fine not to delete anything because it's caching. just make sure to delete
@@ -79,19 +84,36 @@ function doSomething() {
   $(".summary_dialog").remove()
   $(".expand_button").remove()
   $("a[aria-label='Story options']").each(function(index, element){
-    const key = identifier + element.id
-    var value = window.sessionStorage.getItem(key)
-    if(isElementInViewport(element) && isNewsCard(element)){
-      if(value === null){
-        window.sessionStorage.setItem(key, 'hidden')
-        value = 'hidden'
+    const key = identifier + element.id;
+    var existingObj = null;
+    if(window.sessionStorage.getItem(key) !== null){
+      console.log(window.sessionStorage.getItem(key));
+      existingObj = JSON.parse(window.sessionStorage.getItem(key));
+    }
+    const url = getNewsUrl(element);
+    if(isElementInViewport(element) && url !== null){
+      var visibility = 'hidden';
+      var author_reputability = 0;
+      var time_to_read = 0;
+      var recap = 'This is the default recap';
+
+      if(existingObj === null){
+        var newObj = {visibility: visibility, author_reputability: author_reputability, time_to_read: time_to_read, recap: recap};
+        window.sessionStorage.setItem(key, JSON.stringify(newObj))
+        saveDetails(key, newObj, url); //will make a request to server and save it to sessionStorage.
+      }else{
+        visibility = existingObj.visibility;
+        author_reputability = existingObj.author_reputability;
+        time_to_read = existingObj.time_to_read;
+        recap = existingObj.recap;
       }
+
       var position = $(element).offset();
     
       var expandButton = createExpandButton('button' + element.id);
       var dialog = createDialog('dialog' + element.id);
-      var summaryDiv = createSummaryDiv('summary' + element.id);
-      var metricsDiv = createMetricsDiv('metrics' + element.id);
+      var summaryDiv = createSummaryDiv('summary' + element.id, recap);
+      var metricsDiv = createMetricsDiv('metrics' + element.id, author_reputability, time_to_read);
 
       expandButton.onclick = function(e){
         handleExpandButtonClick(e, element.id);
@@ -102,10 +124,10 @@ function doSomething() {
       document.body.appendChild(summaryDiv);
       document.body.appendChild(metricsDiv);
   
-      positionExpandButton(expandButton, position)
-      positionDialog(dialog, position, value)
-      positionSummaryDiv(summaryDiv, position, value)
-      positionMetricsDiv(metricsDiv, position, value)
+      positionExpandButton(expandButton, position);
+      positionDialog(dialog, position, visibility);
+      positionSummaryDiv(summaryDiv, position, visibility);
+      positionMetricsDiv(metricsDiv, position, visibility);
     }
   })
 }
@@ -129,13 +151,15 @@ function positionMetricsDiv(metricsDiv, position, visibility){
 function handleExpandButtonClick(event, id){
   $(".summary_dialog").each(function(index, element){
     if(element.id !== undefined && element.id.includes(id)){
+      var obj = JSON.parse(window.sessionStorage.getItem(identifier + id));
       if(element.style.visibility == "visible"){
-        element.style.visibility = "hidden"
-        window.sessionStorage.setItem(identifier + id, "hidden");
+        element.style.visibility = "hidden";
+        obj.visibility = "hidden";
       }else{
-        element.style.visibility = "visible"
-        window.sessionStorage.setItem(identifier + id, "visible");
+        element.style.visibility = "visible";
+        obj.visibility = "visible";
       }
+      window.sessionStorage.setItem(identifier + id, JSON.stringify(obj));
     }
   })
 }
@@ -163,25 +187,26 @@ function createDialog(id){
   return dialog
 }
 
-function createSummaryDiv(id){
+function createSummaryDiv(id, recap){
   var summaryDiv = document.createElement('div')
   summaryDiv.style.height = '200px';
   summaryDiv.style.width = '400px';
   summaryDiv.setAttribute('id', id);
   summaryDiv.setAttribute('class', 'summary_div');
   summaryDiv.setAttribute('class', 'summary_dialog');
-  summaryDiv.innerHTML = "Knowing that millions of people around the world would be watching in person and on television and expecting great things from him — at least one more gold medal for America, if not another world record — during this, his fourth and surely his last appearance in the World Olympics, and realizing that his legs could no longer carry him down the runway with the same blazing speed and confidence in making a huge, eye-popping leap that they were capable of a few years ago when he set world records in the 100-meter dash and in the 400-meter relay and won a silver medal in the long jump, the renowned sprinter and track-and-field personality Carl Lewis, who had known pressure from fans and media before but never, even as a professional runner, this kind of pressure, made only a few appearances in races during the few months";
+  summaryDiv.innerHTML = recap;
+  //"Knowing that millions of people around the world would be watching in person and on television and expecting great things from him — at least one more gold medal for America, if not another world record — during this, his fourth and surely his last appearance in the World Olympics, and realizing that his legs could no longer carry him down the runway with the same blazing speed and confidence in making a huge, eye-popping leap that they were capable of a few years ago when he set world records in the 100-meter dash and in the 400-meter relay and won a silver medal in the long jump, the renowned sprinter and track-and-field personality Carl Lewis, who had known pressure from fans and media before but never, even as a professional runner, this kind of pressure, made only a few appearances in races during the few months";
   return summaryDiv
 }
 
-function createMetricsDiv(id){
+function createMetricsDiv(id, author_reputability, time_to_read){
   var metricsDiv = document.createElement('div')
   metricsDiv.style.height = '70px';
   metricsDiv.style.width = '400px';
   metricsDiv.setAttribute('id', id);
   metricsDiv.setAttribute('class', 'summary_metrics');
   metricsDiv.setAttribute('class', 'summary_dialog');
-  metricsDiv.innerHTML = "Average Percentage Read: <br/> Author Reputability: <br/> Read Time: <br/>";
+  metricsDiv.innerHTML = "Author Reputability: " + author_reputability + "<br/> Time To Read: " + time_to_read + "<br/>";
   return metricsDiv
 }
 
