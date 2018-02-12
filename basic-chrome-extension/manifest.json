@@ -10,7 +10,8 @@
   },
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "http://*/"
   ],
   "content_scripts": [
     {
@@ -24,5 +25,8 @@
   "web_accessible_resources": [
     "template.html",
     "images/*.png"
-  ]
+  ],
+  "background": {
+      "scripts": ["eventPage.js"]
+  }
 }

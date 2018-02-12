@@ -63,6 +63,15 @@ function isNewsCard(storyOptionsElement){
   return false
 }
 
+function getDetails(url){
+  console.log('hi')
+  chrome.runtime.sendMessage({endpoint: "summary", article_url: url}, function(response) {
+    console.log(response);
+  });
+}
+
+//getDetails("https://www.vox.com/2018/2/6/16982370/trump-asked-the-pentagon-start-planning-a-military-parade");
+
 //actually it's fine not to delete anything because it's caching. just make sure to delete
 //all relevant data during page reloads. and this is where the code may be fucking up.
 
