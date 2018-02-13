@@ -104,7 +104,7 @@ function doSomething() {
       if(existingObj === null){
         var newObj = {visibility: visibility, author_reputability: author_reputability, time_to_read: time_to_read, recap: recap};
         window.sessionStorage.setItem(key, JSON.stringify(newObj))
-        saveDetails(key, url); //will make a request to server and save it to sessionStorage.
+        saveDetails(key, url);
       }else{
         visibility = existingObj.visibility;
         author_reputability = existingObj.author_reputability;
@@ -145,17 +145,18 @@ function positionDialog(dialog, position, visibility){
 }
 
 function positionSummaryDiv(summaryDiv, position, visibility){
-  $(summaryDiv).css({left: position.left - 52, top: position.top + 110, visibility: visibility})
+  $(summaryDiv).css({left: position.left - 52, top: position.top + 90, visibility: visibility})
 }
 
 function positionMetricsDiv(metricsDiv, position, visibility){
-  $(metricsDiv).css({left: position.left - 52, top: position.top + 50, visibility: visibility})
+  $(metricsDiv).css({left: position.left - 52, top: position.top + 40, visibility: visibility})
 }
 
 function handleExpandButtonClick(event, id){
   $(".summary_dialog").each(function(index, element){
     if(element.id !== undefined && element.id.includes(id)){
-      var obj = JSON.parse(window.sessionStorage.getItem(identifier + id));
+      const key = identifier + id
+      var obj = JSON.parse(window.sessionStorage.getItem(key));
 
       if(element.style.visibility == "visible"){
         element.style.visibility = "hidden";
@@ -165,7 +166,7 @@ function handleExpandButtonClick(event, id){
         obj.visibility = "visible";
       }
 
-      window.sessionStorage.setItem(identifier + id, JSON.stringify(obj));
+      window.sessionStorage.setItem(key, JSON.stringify(obj));
     }
   })
 }
@@ -200,8 +201,10 @@ function createSummaryDiv(id, recap){
   summaryDiv.setAttribute('id', id);
   summaryDiv.setAttribute('class', 'summary_div');
   summaryDiv.setAttribute('class', 'summary_dialog');
-  summaryDiv.innerHTML = recap;
-  //"Knowing that millions of people around the world would be watching in person and on television and expecting great things from him — at least one more gold medal for America, if not another world record — during this, his fourth and surely his last appearance in the World Olympics, and realizing that his legs could no longer carry him down the runway with the same blazing speed and confidence in making a huge, eye-popping leap that they were capable of a few years ago when he set world records in the 100-meter dash and in the 400-meter relay and won a silver medal in the long jump, the renowned sprinter and track-and-field personality Carl Lewis, who had known pressure from fans and media before but never, even as a professional runner, this kind of pressure, made only a few appearances in races during the few months";
+  var summaryParagraph = document.createElement('p');
+  summaryParagraph.setAttribute('id', 'summary_text');
+  summaryParagraph.innerHTML = recap;
+  summaryDiv.appendChild(summaryParagraph);
   return summaryDiv
 }
 
@@ -212,7 +215,10 @@ function createMetricsDiv(id, author_reputability, time_to_read){
   metricsDiv.setAttribute('id', id);
   metricsDiv.setAttribute('class', 'summary_metrics');
   metricsDiv.setAttribute('class', 'summary_dialog');
-  metricsDiv.innerHTML = "Author Reputability: " + author_reputability + "<br/> Time To Read: " + time_to_read + "<br/>";
+  var metricsParagraph = document.createElement('p');
+  metricsParagraph.setAttribute('id', 'metrics_text');
+  metricsParagraph.innerHTML = "Author Reputability: " + author_reputability + "<br/> Time To Read: " + time_to_read + "<br/>";
+  metricsDiv.appendChild(metricsParagraph);
   return metricsDiv
 }
 

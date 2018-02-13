@@ -15,10 +15,22 @@
 
 .summary_div {
   display: block;
-  padding: 10;
 }
 
 .summary_metrics {
   display: block;
-  padding: 10;
+}
+
+#metrics_text {
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.38;
+  padding: 10px;
+}
+
+#summary_text{
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.38;
+  padding: 10px;
 }
