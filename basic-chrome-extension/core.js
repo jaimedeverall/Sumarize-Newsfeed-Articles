@@ -40,7 +40,6 @@ function findNewsLink(){
 }
 
 //This function will return the news url if it is a story otherwise it will return null
-//This function is not currently used.
 function getNewsUrl(storyOptionsElement){
   var overall = $(storyOptionsElement).parent().parent().parent().get(0);
   var newsLinkElement = $(overall).find("a[class='_52c6']").get(0)
@@ -53,6 +52,7 @@ function getNewsUrl(storyOptionsElement){
   return null
 }
 
+//This function is not used.
 function isNewsCard(storyOptionsElement){
   var overall = $(storyOptionsElement).parent().parent().parent().get(0);
   var newsLinkElement = $(overall).find("a[class='_52c6']").get(0)
@@ -62,9 +62,10 @@ function isNewsCard(storyOptionsElement){
   return false
 }
 
-function saveDetails(key, obj, url){
+function saveDetails(key, url){
   chrome.runtime.sendMessage({endpoint: "summary", article_url: url}, function(response) {
     responseObj = JSON.parse(response);
+    obj = JSON.parse(window.sessionStorage.getItem(key));
     obj.author_reputability = responseObj.author_reputability;
     obj.time_to_read = responseObj.time_to_read;
     obj.recap = responseObj.recap;
@@ -83,13 +84,17 @@ function doSomething() {
   $(".summary_dialog").remove()
   $(".expand_button").remove()
   $("a[aria-label='Story options']").each(function(index, element){
+
     const key = identifier + element.id;
+
     var existingObj = null;
     if(window.sessionStorage.getItem(key) !== null){
       console.log(window.sessionStorage.getItem(key));
       existingObj = JSON.parse(window.sessionStorage.getItem(key));
     }
+
     const url = getNewsUrl(element);
+
     if(isElementInViewport(element) && url !== null){
       var visibility = 'hidden';
       var author_reputability = 0;
@@ -99,7 +104,7 @@ function doSomething() {
       if(existingObj === null){
         var newObj = {visibility: visibility, author_reputability: author_reputability, time_to_read: time_to_read, recap: recap};
         window.sessionStorage.setItem(key, JSON.stringify(newObj))
-        saveDetails(key, newObj, url); //will make a request to server and save it to sessionStorage.
+        saveDetails(key, url); //will make a request to server and save it to sessionStorage.
       }else{
         visibility = existingObj.visibility;
         author_reputability = existingObj.author_reputability;
@@ -151,6 +156,7 @@ function handleExpandButtonClick(event, id){
   $(".summary_dialog").each(function(index, element){
     if(element.id !== undefined && element.id.includes(id)){
       var obj = JSON.parse(window.sessionStorage.getItem(identifier + id));
+
       if(element.style.visibility == "visible"){
         element.style.visibility = "hidden";
         obj.visibility = "hidden";
@@ -158,6 +164,7 @@ function handleExpandButtonClick(event, id){
         element.style.visibility = "visible";
         obj.visibility = "visible";
       }
+
       window.sessionStorage.setItem(identifier + id, JSON.stringify(obj));
     }
   })
