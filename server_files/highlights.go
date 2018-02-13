@@ -7,7 +7,7 @@ func retrieveHighlights(article_url string) map[string]interface{}{
 	// find highlights. 
 	
 	// grab link, extract highlights 
-	cmd := exec.Command("./highlights_script.py", article_url) 
+	cmd := exec.Command("python3", "highlights_script.py", article_url) 
 	summary_bytes, _ := cmd.Output()
 
 	raw := make( map[string]interface{} )

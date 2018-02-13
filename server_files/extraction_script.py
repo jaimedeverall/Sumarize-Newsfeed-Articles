@@ -1,4 +1,3 @@
-#!/usr/local/bin/python3.6
 from newspaper import Article
 import sys
 import json

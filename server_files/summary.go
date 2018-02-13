@@ -7,7 +7,7 @@ import "strings"
 import "strconv"
 
 func retrieveSummary(article_url string) map[string]interface{} {
-	cmd := exec.Command("./extraction_script.py", article_url) 
+	cmd := exec.Command("python3", "extraction_script.py", article_url) 
 	summary_bytes, _ := cmd.Output()
 
 	raw := make( map[string]string )
