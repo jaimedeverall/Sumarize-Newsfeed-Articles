@@ -33,7 +33,12 @@ func retrieveSummary(article_url string) map[string]interface{} {
 	newArticle.reputability = 0 
 	newArticle.time_to_read = float64(num_words) / 275.0 + float64(num_images) * 0.15
 
-	return map[string]interface{}{"author_reputability": newArticle.reputability, "time_to_read": newArticle.time_to_read, 
+	timeString := strconv.FormatFloat(newArticle.time_to_read, 'f', 2, 64)
+
+	newArticleIdx := strings.Index(timeString, ".") 
+	newArticleString := timeString[:newArticleIdx] + " minutes"
+
+	return map[string]interface{}{"author_reputability": newArticle.reputability, "time_to_read": newArticleString, 
 				"recap": newArticle.summary}
 }
 
