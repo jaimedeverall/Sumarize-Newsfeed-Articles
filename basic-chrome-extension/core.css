@@ -20,6 +20,8 @@
   border-style: solid;
   border-color: #4468B0;
   border-width: 2px;
+  display: flex;
+  flex-direction: column;
 }
 
 .metrics_title{

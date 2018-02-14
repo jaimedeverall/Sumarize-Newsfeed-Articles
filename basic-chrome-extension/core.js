@@ -74,12 +74,6 @@ function saveDetails(key, url){
   });
 }
 
-//"author_reputability":0,"recap":"","time_to_read":0.0036363636363636364
-//getDetails("https://www.vox.com/2018/2/6/16982370/trump-asked-the-pentagon-start-planning-a-military-parade");
-
-//actually it's fine not to delete anything because it's caching. just make sure to delete
-//all relevant data during page reloads. and this is where the code may be fucking up.
-
 function doSomething() {
   $(".summary_dialog").remove()
   $(".expand_button").remove()
@@ -114,11 +108,8 @@ function doSomething() {
       var position = $(element).offset();
     
       var expandButton = createExpandButton('button' + element.id);
-      var dialog = createDialogDiv('dialog' + element.id);
+      var dialog = createDialog('dialog' + element.id, recap, author_reputability, time_to_read);
       var triangle = createTriangle('triangle' + element.id);
-      var summaryDiv = createSummaryDiv('summary' + element.id, recap);
-      var metricsDiv = createMetricsDiv('metrics' + element.id, author_reputability, time_to_read);
-
 
       expandButton.onclick = function(e){
         handleExpandButtonClick(e, element.id);
@@ -126,15 +117,11 @@ function doSomething() {
 
       document.body.appendChild(expandButton);
       document.body.appendChild(dialog);
-      document.body.appendChild(summaryDiv);
-      document.body.appendChild(metricsDiv);
       document.body.appendChild(triangle);
   
       positionExpandButton(expandButton, position);
       positionDialog(dialog, position, visibility);
       positionTriangle(triangle, position, visibility);
-      positionSummaryDiv(summaryDiv, position, visibility);
-      positionMetricsDiv(metricsDiv, position, visibility);
     }
   })
 }
@@ -145,14 +132,6 @@ function positionExpandButton(expandButton, position){
 
 function positionDialog(dialog, position, visibility){
   $(dialog).css({left: position.left - 52, top: position.top + 26, visibility: visibility})
-}
-
-function positionSummaryDiv(summaryDiv, position, visibility){
-  $(summaryDiv).css({left: position.left - 52, top: position.top + 80, visibility: visibility})
-}
-
-function positionMetricsDiv(metricsDiv, position, visibility){
-  $(metricsDiv).css({left: position.left - 52, top: position.top + 30, visibility: visibility})
 }
 
 function positionTriangle(triangle, position, visibility){
@@ -178,6 +157,28 @@ function handleExpandButtonClick(event, id){
   })
 }
 
+function createDialog(id, recap, author_reputability, time_to_read){
+  var dialog = document.createElement('div');
+  dialog.setAttribute('id', id);
+  dialog.setAttribute('class', 'summary_dialog dialog_background');
+
+  var summaryDiv = document.createElement('div');
+  summaryDiv.setAttribute('class', 'summary_text');
+  var summaryParagraph = document.createElement('p');
+  summaryParagraph.innerHTML = recap;
+  summaryDiv.appendChild(summaryParagraph);
+
+  var metricsDiv = document.createElement('div')
+  metricsDiv.setAttribute('class', 'metrics_text');
+  var metricsParagraph = document.createElement('p');
+  metricsParagraph.innerHTML = "<span class='metrics_title'>Author Reputability: </span>" + author_reputability + "<br/> <span class='metrics_title'>Time To Read: </span>" + time_to_read + "<br/>";
+  metricsDiv.appendChild(metricsParagraph);
+
+  dialog.appendChild(metricsDiv);
+  dialog.appendChild(summaryDiv);
+  return dialog
+}
+
 function createTriangle(id){
   var smallTriangle = document.createElement('div');
   smallTriangle.setAttribute('class', 'summary_dialog triangle');
@@ -195,37 +196,6 @@ function createExpandButton(id){
   expandButton.setAttribute('src', url);
   expandButton.setAttribute('class', 'expand_button');
   return expandButton
-}
-
-function createDialogDiv(id){
-  var dialog = document.createElement('div');
-  dialog.setAttribute('id', id);
-  dialog.setAttribute('class', 'summary_dialog dialog_background');
-  return dialog;
-}
-
-function createSummaryDiv(id, recap){
-  var summaryDiv = document.createElement('div');
-  summaryDiv.style.height = '200px';
-  summaryDiv.style.width = '400px';
-  summaryDiv.setAttribute('id', id);
-  summaryDiv.setAttribute('class', 'summary_dialog summary_text');
-  var summaryParagraph = document.createElement('p');
-  summaryParagraph.innerHTML = recap;
-  summaryDiv.appendChild(summaryParagraph);
-  return summaryDiv
-}
-
-function createMetricsDiv(id, author_reputability, time_to_read){
-  var metricsDiv = document.createElement('div')
-  metricsDiv.style.height = '70px';
-  metricsDiv.style.width = '400px';
-  metricsDiv.setAttribute('id', id);
-  metricsDiv.setAttribute('class', 'summary_dialog metrics_text');
-  var metricsParagraph = document.createElement('p');
-  metricsParagraph.innerHTML = "<span class='metrics_title'>Author Reputability: </span>" + author_reputability + "<br/> <span class='metrics_title'>Time To Read: </span>" + time_to_read + "<br/>";
-  metricsDiv.appendChild(metricsParagraph);
-  return metricsDiv
 }
 
 //Found on https://medium.com/talk-like/detecting-if-an-element-is-in-the-viewport-jquery-a6a4405a3ea2
