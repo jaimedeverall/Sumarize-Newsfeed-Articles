@@ -1,17 +1,17 @@
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse){
-    console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
+    var requestUrl = "http://localhost:8080/" + request.endpoint + "?article_url=" + request.article_url
     if (request.endpoint === "summary"){
-      var xhr = new XMLHttpRequest();
-      const requestUrl = "http://localhost:8080/summary?article_url=" + request.article_url + "&source=facebook"
-      xhr.open("GET", requestUrl, true);
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4) {
-          sendResponse(xhr.response);
-        }
-      }
-      xhr.send();
+      requestUrl += "&source=" + request.source;
     }
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", requestUrl, true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+        sendResponse(xhr.response);
+      }
+    }
+    xhr.send();
     return true
   }
 );
