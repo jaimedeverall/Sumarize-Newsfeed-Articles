@@ -3,7 +3,7 @@ chrome.runtime.onMessage.addListener(
     console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
     if (request.endpoint === "summary"){
       var xhr = new XMLHttpRequest();
-      const requestUrl = "http://localhost:8080/summary?article_url=" + request.article_url
+      const requestUrl = "http://localhost:8080/summary?article_url=" + request.article_url + "&source=facebook"
       xhr.open("GET", requestUrl, true);
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {

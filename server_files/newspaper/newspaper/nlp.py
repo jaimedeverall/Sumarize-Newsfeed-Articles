@@ -53,6 +53,21 @@ def summarize(url='', title='', text='', max_sents=5):
     summaries.sort(key=lambda summary: summary[0])
     return [summary[1] for summary in summaries]
 
+def top_sentences(url='', title='', text='', max_sents=5):
+    if not text or not title or max_sents <= 0:
+        return {}
+    sentences = split_sentences(text)
+    keys = keywords(text)
+    titleWords = split_words(title)
+
+    ranks = score(sentences, titleWords, keys).most_common(max_sents) 
+    top_sentences = {} 
+
+    for rank in ranks: 
+        top_sentences[rank[0][1]] = rank[1] 
+    return top_sentences
+
+
 def highlights(url='', title='', text='', max_sents=5):
     # separate by paragraph
     # define paragraph by '\n'
