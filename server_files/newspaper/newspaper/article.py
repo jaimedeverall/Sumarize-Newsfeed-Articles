@@ -146,6 +146,9 @@ class Article(object):
         # paragraph highlights
         self.highlights = {}
 
+        # top sentences 
+        self.top_sentences = {} 
+
     def build(self):
         """Build a lone article from a URL independent of the source (newspaper).
         Don't normally call this method b/c it's good to multithread articles
@@ -361,6 +364,22 @@ class Article(object):
 
         highlights = nlp.highlights(title=self.title, text=self.text, max_sents=max_sents)
         self.highlights = highlights
+
+    def prepareSentenceHighlights(self, sentences = 4): 
+        """Keyword extraction wrapper
+        """
+        self.throw_if_not_downloaded_verbose()
+        self.throw_if_not_parsed_verbose()
+
+        nlp.load_stopwords(self.config.get_language())
+        text_keyws = list(nlp.keywords(self.text).keys())
+        title_keyws = list(nlp.keywords(self.title).keys())
+        keyws = list(set(title_keyws + text_keyws))
+        self.set_keywords(keyws)
+
+        max_sents = sentences 
+        self.top_sentences = nlp.top_sentences(title=self.title, text=self.text, max_sents=max_sents)
+
 
     def get_parse_candidate(self):
         """A parse candidate is a wrapper object holding a link hash of this
