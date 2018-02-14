@@ -89,7 +89,6 @@ function doSomething() {
 
     var existingObj = null;
     if(window.sessionStorage.getItem(key) !== null){
-      console.log(window.sessionStorage.getItem(key));
       existingObj = JSON.parse(window.sessionStorage.getItem(key));
     }
 
@@ -115,9 +114,11 @@ function doSomething() {
       var position = $(element).offset();
     
       var expandButton = createExpandButton('button' + element.id);
-      var dialog = createDialog('dialog' + element.id);
+      var dialog = createDialogDiv('dialog' + element.id);
+      var triangle = createTriangle('triangle' + element.id);
       var summaryDiv = createSummaryDiv('summary' + element.id, recap);
       var metricsDiv = createMetricsDiv('metrics' + element.id, author_reputability, time_to_read);
+
 
       expandButton.onclick = function(e){
         handleExpandButtonClick(e, element.id);
@@ -127,9 +128,11 @@ function doSomething() {
       document.body.appendChild(dialog);
       document.body.appendChild(summaryDiv);
       document.body.appendChild(metricsDiv);
+      document.body.appendChild(triangle);
   
       positionExpandButton(expandButton, position);
       positionDialog(dialog, position, visibility);
+      positionTriangle(triangle, position, visibility);
       positionSummaryDiv(summaryDiv, position, visibility);
       positionMetricsDiv(metricsDiv, position, visibility);
     }
@@ -141,15 +144,19 @@ function positionExpandButton(expandButton, position){
 }
 
 function positionDialog(dialog, position, visibility){
-  $(dialog).css({left: position.left - 52, top: position.top + 23, visibility: visibility})
+  $(dialog).css({left: position.left - 52, top: position.top + 26, visibility: visibility})
 }
 
 function positionSummaryDiv(summaryDiv, position, visibility){
-  $(summaryDiv).css({left: position.left - 52, top: position.top + 90, visibility: visibility})
+  $(summaryDiv).css({left: position.left - 52, top: position.top + 80, visibility: visibility})
 }
 
 function positionMetricsDiv(metricsDiv, position, visibility){
-  $(metricsDiv).css({left: position.left - 52, top: position.top + 40, visibility: visibility})
+  $(metricsDiv).css({left: position.left - 52, top: position.top + 30, visibility: visibility})
+}
+
+function positionTriangle(triangle, position, visibility){
+  $(triangle).css({left: position.left - 24, top: position.top + 20, visibility: visibility})
 }
 
 function handleExpandButtonClick(event, id){
@@ -171,6 +178,13 @@ function handleExpandButtonClick(event, id){
   })
 }
 
+function createTriangle(id){
+  var smallTriangle = document.createElement('div');
+  smallTriangle.setAttribute('class', 'summary_dialog triangle');
+  smallTriangle.setAttribute('id', id)
+  return smallTriangle;
+}
+
 function createExpandButton(id){
   var expandButton = document.createElement('input');
   var url = chrome.runtime.getURL('images/expandButton.png')
@@ -183,26 +197,20 @@ function createExpandButton(id){
   return expandButton
 }
 
-function createDialog(id){
-  var dialog = document.createElement('img')
-  var url = chrome.runtime.getURL('images/dialog.png')
-  dialog.style.height = '300px';
-  dialog.style.width = '400px';
+function createDialogDiv(id){
+  var dialog = document.createElement('div');
   dialog.setAttribute('id', id);
-  dialog.setAttribute('class', 'summary_dialog');
-  dialog.setAttribute('src', url)
-  return dialog
+  dialog.setAttribute('class', 'summary_dialog dialog_background');
+  return dialog;
 }
 
 function createSummaryDiv(id, recap){
-  var summaryDiv = document.createElement('div')
+  var summaryDiv = document.createElement('div');
   summaryDiv.style.height = '200px';
   summaryDiv.style.width = '400px';
   summaryDiv.setAttribute('id', id);
-  summaryDiv.setAttribute('class', 'summary_div');
-  summaryDiv.setAttribute('class', 'summary_dialog');
+  summaryDiv.setAttribute('class', 'summary_dialog summary_text');
   var summaryParagraph = document.createElement('p');
-  summaryParagraph.setAttribute('id', 'summary_text');
   summaryParagraph.innerHTML = recap;
   summaryDiv.appendChild(summaryParagraph);
   return summaryDiv
@@ -213,11 +221,9 @@ function createMetricsDiv(id, author_reputability, time_to_read){
   metricsDiv.style.height = '70px';
   metricsDiv.style.width = '400px';
   metricsDiv.setAttribute('id', id);
-  metricsDiv.setAttribute('class', 'summary_metrics');
-  metricsDiv.setAttribute('class', 'summary_dialog');
+  metricsDiv.setAttribute('class', 'summary_dialog metrics_text');
   var metricsParagraph = document.createElement('p');
-  metricsParagraph.setAttribute('id', 'metrics_text');
-  metricsParagraph.innerHTML = "Author Reputability: " + author_reputability + "<br/> Time To Read: " + time_to_read + "<br/>";
+  metricsParagraph.innerHTML = "<span class='metrics_title'>Author Reputability: </span>" + author_reputability + "<br/> <span class='metrics_title'>Time To Read: </span>" + time_to_read + "<br/>";
   metricsDiv.appendChild(metricsParagraph);
   return metricsDiv
 }
