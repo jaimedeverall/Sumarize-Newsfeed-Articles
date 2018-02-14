@@ -89,9 +89,9 @@ def highlights(url='', title='', text='', max_sents=5):
         for element in ranks:
             sum += element
         if len(ranks) == 0:
-            scores[count] = 0
+            scores[count] = ["", 0]
         else:
-            scores[count] = sum / float(len(ranks))
+            scores[count] = [sentences[0], sum / float(len(ranks))]
     return scores
 
 def score_highlights(sentences, titleWords, keywords):
