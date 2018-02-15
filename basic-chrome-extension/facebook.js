@@ -66,6 +66,7 @@ function saveDetails(key, url){
   chrome.runtime.sendMessage({endpoint: "summary", source: "facebook", article_url: url}, function(response) {
     responseObj = JSON.parse(response);
     obj = JSON.parse(window.sessionStorage.getItem(key));
+    obj.loaded = true;
     obj.author_reputability = responseObj.author_reputability;
     obj.time_to_read = responseObj.time_to_read;
     obj.recap = responseObj.recap;
@@ -90,52 +91,63 @@ function doSomething() {
 
     if(isElementInViewport(element) && url !== null){
       var visibility = 'hidden';
-      var author_reputability = 0;
-      var time_to_read = 0;
-      var recap = 'This is the default recap';
+      var loaded = false;
 
       if(existingObj === null){
-        var newObj = {visibility: visibility, author_reputability: author_reputability, time_to_read: time_to_read, recap: recap};
-        window.sessionStorage.setItem(key, JSON.stringify(newObj))
+        var newObj = {visibility: 'hidden', loaded: false};
+        window.sessionStorage.setItem(key, JSON.stringify(newObj));
         saveDetails(key, url);
       }else{
         visibility = existingObj.visibility;
-        author_reputability = existingObj.author_reputability;
-        time_to_read = existingObj.time_to_read;
-        recap = existingObj.recap;
+        loaded = existingObj.loaded;
       }
 
       var position = $(element).offset();
     
-      var expandButton = createExpandButton('button' + element.id);
-      var dialog = createDialog('dialog' + element.id, recap, author_reputability, time_to_read);
-      var triangle = createTriangle('triangle' + element.id);
+      var expandButton = createExpandButton(element.id);
+      var dialog = createDialog(element.id, loaded);
+      var triangle = createTriangle(element.id);
 
       expandButton.onclick = function(e){
         handleExpandButtonClick(e, element.id);
       }
 
+      $(dialog).css({visibility: visibility});
+      $(triangle).css({visibility: visibility});
+
       document.body.appendChild(expandButton);
       document.body.appendChild(dialog);
       document.body.appendChild(triangle);
+
+      resizeDialog(dialog, loaded);
   
       positionExpandButton(expandButton, position);
-      positionDialog(dialog, position, visibility);
-      positionTriangle(triangle, position, visibility);
+      positionDialog(dialog, position);
+      positionTriangle(triangle, position);
     }
   })
+}
+
+function resizeDialog(dialog, loaded){
+  if(loaded === true){
+    const children = $(dialog).children();
+    const metricsDiv = children.get(0);
+    const summaryDiv = children.get(1);
+    const newHeight = $(summaryDiv).height() + $(metricsDiv).height();
+    $(dialog).css({height: `${newHeight}px`});
+  }
 }
 
 function positionExpandButton(expandButton, position){
   $(expandButton).css({left: position.left - 30, top: position.top - 3})
 }
 
-function positionDialog(dialog, position, visibility){
-  $(dialog).css({left: position.left - 52, top: position.top + 26, visibility: visibility})
+function positionDialog(dialog, position){
+  $(dialog).css({left: position.left - 52, top: position.top + 26})
 }
 
-function positionTriangle(triangle, position, visibility){
-  $(triangle).css({left: position.left - 24, top: position.top + 20, visibility: visibility})
+function positionTriangle(triangle, position){
+  $(triangle).css({left: position.left - 24, top: position.top + 20})
 }
 
 function handleExpandButtonClick(event, id){
@@ -157,16 +169,20 @@ function handleExpandButtonClick(event, id){
   })
 }
 
-function createDialog(id, recap, author_reputability, time_to_read){
+function createDialog(id, loaded){
+  const dialogID = 'dialog' + id;
+  const key = identifier + id;
   var dialog = document.createElement('div');
-  dialog.setAttribute('id', id);
+  dialog.setAttribute('id', dialogID);
   dialog.setAttribute('class', 'summary_dialog dialog_background');
+  if(loaded === false){
+    return dialog;
+  }
 
-  var summaryDiv = document.createElement('div');
-  summaryDiv.setAttribute('class', 'summary_text');
-  var summaryParagraph = document.createElement('p');
-  summaryParagraph.innerHTML = recap;
-  summaryDiv.appendChild(summaryParagraph);
+  const obj = JSON.parse(window.sessionStorage.getItem(key));
+  var recap = obj.recap;
+  var author_reputability = obj.author_reputability;
+  var time_to_read = obj.time_to_read;
 
   var metricsDiv = document.createElement('div')
   metricsDiv.setAttribute('class', 'metrics_text');
@@ -174,24 +190,32 @@ function createDialog(id, recap, author_reputability, time_to_read){
   metricsParagraph.innerHTML = "<span class='metrics_title'>Author Reputability: </span>" + author_reputability + "<br/> <span class='metrics_title'>Time To Read: </span>" + time_to_read + "<br/>";
   metricsDiv.appendChild(metricsParagraph);
 
+  var summaryDiv = document.createElement('div');
+  summaryDiv.setAttribute('class', 'summary_text');
+  var summaryParagraph = document.createElement('p');
+  summaryParagraph.innerHTML = recap;
+  summaryDiv.appendChild(summaryParagraph);
+
   dialog.appendChild(metricsDiv);
   dialog.appendChild(summaryDiv);
   return dialog
 }
 
 function createTriangle(id){
+  const triangleID = 'triangle'+ id;
   var smallTriangle = document.createElement('div');
   smallTriangle.setAttribute('class', 'summary_dialog triangle');
-  smallTriangle.setAttribute('id', id)
+  smallTriangle.setAttribute('id', triangleID);
   return smallTriangle;
 }
 
 function createExpandButton(id){
+  const buttonID = 'expandButton' + id;
   var expandButton = document.createElement('input');
   var url = chrome.runtime.getURL('images/expandButton.png')
   expandButton.style.height = '25px';
   expandButton.style.width = '25px';
-  expandButton.setAttribute('id', id)
+  expandButton.setAttribute('id', buttonID);
   expandButton.setAttribute('type', 'image');
   expandButton.setAttribute('src', url);
   expandButton.setAttribute('class', 'expand_button');
