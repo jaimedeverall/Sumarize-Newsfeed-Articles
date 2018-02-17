@@ -16,7 +16,8 @@ function createHighlights(highlights){
     if(sentence.length > 0){
       console.log(sentence);
       console.log(score);
-      $(`p:contains('${sentence}')`).each(function(index, element){
+      const selector = `h1:contains('${sentence}'), h2:contains('${sentence}'), h3:contains('${sentence}'), h4:contains('${sentence}'), h5:contains('${sentence}'), h6:contains('${sentence}'), p:contains('${sentence}')`;
+      $(selector).each(function(index, element){
         console.log(element);
       })
     }
@@ -24,5 +25,3 @@ function createHighlights(highlights){
 }
 
 getHighlights(document.URL);
-
-

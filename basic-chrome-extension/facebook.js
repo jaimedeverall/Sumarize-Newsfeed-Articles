@@ -94,10 +94,18 @@ function doSomething() {
       var loaded = false;
 
       if(existingObj === null){
-        var newObj = {visibility: 'hidden', loaded: false};
+        var newObj = {visibility: 'hidden', loaded: false, url: url};
         window.sessionStorage.setItem(key, JSON.stringify(newObj));
         saveDetails(key, url);
       }else{
+        if(url !== existingObj.url){
+          console.log('old url' , existingObj.url)
+          console.log('new url' , url)
+          existingObj.loaded = false
+          existingObj.url = url
+          window.sessionStorage.setItem(key, JSON.stringify(existingObj));
+          saveDetails(key, url)
+        }
         visibility = existingObj.visibility;
         loaded = existingObj.loaded;
       }
