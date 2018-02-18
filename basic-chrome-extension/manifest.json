@@ -27,6 +27,11 @@
       "js": ["jquery-3.3.1.min.js", "test.js"],
       "run_at": "document_end",
       "all_frames": true
+    },
+    {
+      "matches": ["https://*/*", "http://*/*"],
+      "js":  ["jquery-3.3.1.min.js", "user_highlights.js"], 
+      "css": ["test.css"]
     }
   ],
   "web_accessible_resources": [
