@@ -30,7 +30,8 @@
     },
     {
       "matches": ["https://*/*", "http://*/*"],
-      "js":  ["jquery-3.3.1.min.js", "user_highlights.js"]
+      "js":  ["jquery-3.3.1.min.js", "user_highlights.js"], 
+      "css": ["test.css"]
     }
   ],
   "web_accessible_resources": [
