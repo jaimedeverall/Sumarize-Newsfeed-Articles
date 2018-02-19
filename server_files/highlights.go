@@ -30,6 +30,7 @@ func retrieveTopSentences(article_url string) map[string]interface{} {
 	return raw
 }
 
-func insertNewHighlights(article_url string, user_id string, line_number int) {
+func insertNewHighlights(article_url string, user_id string, highlighted_string string) {
+	fmt.Println("highlight string: " + highlighted_string + "\n")
 	// 
 }
