@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "Getting started example",
-  "description": "This extension allows the user to change the background color of the current page.",
+  "name": "Gist",
+  "description": "This extension allows you to consume news efficiently.",
   "version": "1.0",
   "browser_action": {
     "default_icon": "icon.png",
@@ -22,7 +22,7 @@
       "all_frames": true
     },
     {
-      "matches": ["https://www.vox.com/*"],
+      "matches": ["https://www.vox.com/*", "https://www.nytimes.com/*"],
       "css": ["test.css"],
       "js": ["jquery-3.3.1.min.js", "test.js"],
       "run_at": "document_end",
