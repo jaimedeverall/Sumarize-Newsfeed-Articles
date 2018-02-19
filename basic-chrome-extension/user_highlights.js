@@ -7,12 +7,22 @@ function createHighlightBox() {
 
   var highlightButton = document.createElement('input');
 
-  var url = chrome.runtime.getURL('images/highlighter_icon.png')
+  var url = chrome.runtime.getURL('images/highlighter_icon.png');
   //highlightButton.setAttribute('src', url);
   highlightButton.style.height = '50px'
   highlightButton.style.width = '50px'
   highlightButton.setAttribute('type', 'image')
   highlightButton.setAttribute('src', url)
+  highlightButton.setAttribute('class', 'highlightButton')
+
+  /*
+  $(document).on('click','.highlightButton',function(){
+    console.log("what?")
+    chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
+      var page_url = tabs[0].url;
+    });
+    console.log("current page url: ", page_url)
+  })*/
 
   dialog.appendChild(highlightButton); 
   return dialog
@@ -35,7 +45,6 @@ function resizeHighlightBox(highlight_box) {
   const highlightButton = highlightChildren.get(0);
 
   const newHeight = $(highlightButton).height(); 
-  console.log('newHeight', newHeight)
   $(highlight_box).css({height: `${newHeight}px`}); 
   $(highlight_box).css({width: `${newHeight}px`}); 
 }
@@ -48,39 +57,58 @@ function createTriangle(){
 
 function popup_text() { 
   var text = getSelectedText(); 
+  if (text == last_highlight) { 
+    last_highlight = ""
+    return;
+  }
   if (text && text.length > 2) { 
     var highlight_box = createHighlightBox(); 
     highlight_box.style.backgroundColor = 'red'; 
-    console.log("appending popup box ... "); 
     document.body.appendChild(highlight_box);
+    popup_visible = true
 
     var rect = highlight_box.getBoundingClientRect();
-    console.log("Dimensions: ", rect.top, rect.right, rect.bottom, rect.left);
     resizeHighlightBox(highlight_box);
     var r=window.getSelection().getRangeAt(0).getBoundingClientRect();
     var relative=document.body.parentNode.getBoundingClientRect();
     $(highlight_box).css('left', r.left + 5 + $(window).scrollLeft()); 
     $(highlight_box).css('top', r.top - 50 - 8 + $(window).scrollTop()); 
+    leftBound = r.left + 5 + $(window).scrollLeft();
+    topBound = r.top - 50 - 8 + $(window).scrollTop(); 
 
     var triangle = createTriangle() ;
     document.body.appendChild(triangle);
+
     $(triangle).css('left', r.left + 15 + $(window).scrollLeft())
     $(triangle).css('top', r.top - 8 + $(window).scrollTop())
-
-    //highlight_box.style.bottom = r.top + 'px';
-    //highlight_box.style.left = r.left + 'px'; 
-    //highlight_box.style.top =(r.bottom -relative.top)+'px';//this will place ele below the selection
-    //highlight_box.style.right=-(r.right-relative.right)+'px';//this will align the right edges together
-
-    console.log("client height: " + highlight_box.style.top);
-    console.log("client width: " + highlight_box.style.right);
   }
 }
 
-function remove_popup() { 
+function highlightClicked() { 
+  last_highlight = window.getSelection().toString(); 
+  console.log("highlighted text: ", window.getSelection().toString()); 
+}
+
+function remove_popup(e) {
+  // check if mouse down is in the button
+  console.log("popup_visible", popup_visible)
+  if (popup_visible) { 
+    if (e.pageX < leftBound + width && e.pageX > leftBound 
+      && e.pageY > topBound && e.pageY < topBound + height) { 
+      highlightClicked(); 
+    }
+  }
   $('.random').remove();
   $('.triangle').remove();
+  popup_visible = false
 }
+
+var popup_visible = false
+var leftBound = 0 
+var topBound = 0 
+var height = 150 
+var width = 150
+var last_highlight = "" 
 
 document.onkeyup = popup_text; 
 document.onmouseup = popup_text; 
