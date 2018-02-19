@@ -15,15 +15,6 @@ function createHighlightBox() {
   highlightButton.setAttribute('src', url)
   highlightButton.setAttribute('class', 'highlightButton')
 
-  /*
-  $(document).on('click','.highlightButton',function(){
-    console.log("what?")
-    chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
-      var page_url = tabs[0].url;
-    });
-    console.log("current page url: ", page_url)
-  })*/
-
   dialog.appendChild(highlightButton); 
   return dialog
 }
@@ -86,12 +77,20 @@ function popup_text() {
 
 function highlightClicked() { 
   last_highlight = window.getSelection().toString(); 
+  var location = document.location.href
+  console.log(location)
+
+  var details = {"source": "publisher_site", "article_url": location, "highlight": last_highlight}
+
+  chrome.runtime.sendMessage({endpoint: "highlights", request_type: "POST", parameters: details}, function(response) {
+    console.log("response received")
+  });
+
   console.log("highlighted text: ", window.getSelection().toString()); 
 }
 
 function remove_popup(e) {
   // check if mouse down is in the button
-  console.log("popup_visible", popup_visible)
   if (popup_visible) { 
     if (e.pageX < leftBound + width && e.pageX > leftBound 
       && e.pageY > topBound && e.pageY < topBound + height) { 

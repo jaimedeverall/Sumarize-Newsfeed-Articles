@@ -63,7 +63,8 @@ function isNewsCard(storyOptionsElement){
 }
 
 function saveDetails(key, url){
-  chrome.runtime.sendMessage({endpoint: "summary", source: "facebook", article_url: url}, function(response) {
+  var details = {"source": "facebook", "article_url": url}
+  chrome.runtime.sendMessage({endpoint: "summary", request_type: "GET", parameters: details}, function(response) {
     responseObj = JSON.parse(response);
     obj = JSON.parse(window.sessionStorage.getItem(key));
     obj.loaded = true;

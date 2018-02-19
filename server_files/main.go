@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-	"strconv"
 )
 
 type Metadata struct{
@@ -76,17 +75,10 @@ func highlightsHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(highlights)
 	} else if (r.Method=="POST") {
 		user_id := r.FormValue("user_id")
-		line_number := r.FormValue("line_number")
+		highlight := r.FormValue("highlight")
 
 		if (len(user_id) == 0) { http.Error(w, "Please pass in a user_id", http.StatusBadRequest) }
-		if (len(line_number) == 0) { http.Error(w, "Please pass in a line_number", http.StatusBadRequest) }
-
-		i_line_number, err := strconv.Atoi(line_number) 
-		if (err != nil) {
-			http.Error(w, "The line number wasn't an integer", http.StatusBadRequest)
-		} else {
-			insertNewHighlights(article_url, user_id, i_line_number)
-		}
+		insertNewHighlights(article_url, user_id, highlight)
 	} else {
 		http.Error(w, "This address only accepts GET responses", http.StatusNotAcceptable)
 	}

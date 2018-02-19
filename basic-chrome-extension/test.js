@@ -2,7 +2,7 @@ console.log('test.js')
 
 function getHighlights(url){
   console.log('getting highlights');
-  chrome.runtime.sendMessage({endpoint: "highlights", article_url: url}, function(response) {
+  chrome.runtime.sendMessage({endpoint: "highlights", request_type: "GET", parameters: {}}, function(response) {
     var obj = JSON.parse(response);
     var highlights = obj.highlights
     createHighlights(highlights);
