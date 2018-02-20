@@ -1,54 +1,82 @@
-console.log('test.js')
+console.log('reloading');
 const highlightsDivWidth = 30;
 const spacing = 5;
-const identifier = 'gisthighlights'
-var counter = 0;
+const serverResponseIdentifier = 'gisthighlights_' + document.URL + '_raw_response';
+const elementIdentifier = 'gisthighlights'
 
-function getHighlights(url){
-  console.log('getting highlights');
-  const highlights = JSON.parse(window.sessionStorage.getItem(identifier));
+saveHighlights(document.URL);
+
+//Gets called once on each page reload.
+function saveHighlights(url){
+  const highlights = JSON.parse(window.sessionStorage.getItem(serverResponseIdentifier));
   if(highlights === null){
-    chrome.runtime.sendMessage({endpoint: "highlights", article_url: url}, function(response) {
-      console.log('saving highlights');
-      var obj = JSON.parse(response);
-      var highlights = obj.highlights
-      window.sessionStorage.setItem(identifier, JSON.stringify(highlights));
-      createHighlights(highlights);
+    var details = {article_url: url}
+    chrome.runtime.sendMessage({endpoint: 'highlights', request_type: 'GET', parameters: details}, function(response) {
+      var res = JSON.parse(response);
+      window.sessionStorage.setItem(serverResponseIdentifier, JSON.stringify(res.highlights));
+      process(res.highlights);
     });
   }else{
-    createHighlights(highlights)
+    process(highlights);
   }
 }
 
-function createHighlights(highlights){
-  var leftMostPosition = null
-  var matchedElements = []
+//Gets called once on each page reload.
+function process(highlights){
+  console.log(highlights);
+  domElements = tagElements(highlights);
+  var looperCounter = 0;
+  var looper = setInterval(function(){
+    $('.highlights_div').remove();
+    console.log(looperCounter);
+    addHighlights(domElements);
+    looperCounter++;
+    if (looperCounter >= 60){
+      clearInterval(looper);
+    }
+  }, 1000);
+}
+
+//Gets called once on each page reload.
+function tagElements(highlights){
+  var domElements = []
+  var counter = 0
   Object.keys(highlights).forEach(function(key){
     const sentence = highlights[key][0]
     const score = highlights[key][1]
     if(sentence.length > 0){
-      console.log(sentence);
-      console.log(score);
       const selector = `h1:contains('${sentence}'), h2:contains('${sentence}'), h3:contains('${sentence}'), h4:contains('${sentence}'), h5:contains('${sentence}'), h6:contains('${sentence}'), p:contains('${sentence}')`;
-      var matchedElement = $(selector).get(0)
-      if(matchedElement !== undefined){
-        console.log(matchedElement);
-        var position = $(matchedElement).offset();
-        if(leftMostPosition == null){
-          leftMostPosition = position.left;
-        }else{
-          if(position.left < leftMostPosition){
-            leftMostPosition = position.left;
-          }
-        }
-        matchedElements.push({element: matchedElement, score: score})
+      var domElement = $(selector).get(0)
+      if(domElement !== undefined){
+        domElement.setAttribute(elementIdentifier, counter)//have to reset everytime DOM is rendered.
+        domElements.push({element: domElement, score: score})
+        counter += 1
       }
     }
   });
+  console.log(domElements);
+  return domElements;
+}
 
-  for(var i=0; i<matchedElements.length; i++){
-    var element = matchedElements[i].element;
-    var score = matchedElements[i].score;
+function addHighlights(domElements){
+  //eventually see if you can move this code to cache.
+  var leftMostPosition = null
+
+  for(var i=0; i<domElements.length; i++){
+    var domElement = domElements[i].element;
+    var position = $(domElement).offset();
+    if(leftMostPosition == null){
+      leftMostPosition = position.left;
+    }else{
+      if(position.left < leftMostPosition){
+        leftMostPosition = position.left;
+      }
+    }
+  }
+
+  for(var i=0; i<domElements.length; i++){
+    var element = domElements[i].element;
+    var score = domElements[i].score;
     var position = $(element).offset();
     var height = $(element).height();
     var highlightsDiv = createHighlightsDiv(height, score);
@@ -69,14 +97,3 @@ function positionHighlightsDiv(highlightsDiv, leftMost, top){
   var left = leftMost - spacing - highlightsDivWidth;
   $(highlightsDiv).css({top: top, left: left})
 }
-
-window.addEventListener("load", function(event){
-  var looper = setInterval(function(){
-    $('.highlights_div').remove();
-    getHighlights(document.URL);
-    counter++;
-    if (counter >= 30){
-      clearInterval(looper);
-    }
-  }, 1000);
-});
