@@ -1,7 +1,8 @@
 .highlights_div{
   visibility: visible;
-  background-color: red;
+  background-color: green;
   position: absolute;
+  border-radius: 5px;
 }
 
 .random {

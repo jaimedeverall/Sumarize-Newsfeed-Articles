@@ -1,6 +1,6 @@
 console.log('reloading');
 const highlightsDivWidth = 30;
-const spacing = 5;
+const spacing = 8;
 const serverResponseIdentifier = 'gisthighlights_' + document.URL + '_raw_response';
 const elementIdentifier = 'gisthighlights'
 
@@ -24,12 +24,14 @@ function saveHighlights(url){
 //Gets called once on each page reload.
 function process(highlights){
   console.log(highlights);
-  domElements = tagElements(highlights);
+  domElementsAndScores = tagElements(highlights);
+  normalizeScores(domElementsAndScores);
+  console.log(domElementsAndScores);
   var looperCounter = 0;
   var looper = setInterval(function(){
     $('.highlights_div').remove();
     console.log(looperCounter);
-    addHighlights(domElements);
+    addHighlights(domElementsAndScores);
     looperCounter++;
     if (looperCounter >= 60){
       clearInterval(looper);
@@ -38,8 +40,25 @@ function process(highlights){
 }
 
 //Gets called once on each page reload.
+function normalizeScores(domElementsAndScores){
+  //score - minScore / (maxScore - minScore)
+  var minScore = 1
+  var maxScore = 0
+  for(var i=0; i<domElementsAndScores.length; i++){
+    var score = domElementsAndScores[i].score;
+    minScore = Math.min(minScore, score);
+    maxScore = Math.max(maxScore, score);
+  }
+
+  for(var i=0; i<domElementsAndScores.length; i++){
+    var score = domElementsAndScores[i].score
+    domElementsAndScores[i].score = 1.0*(score - minScore) / (maxScore - minScore)
+  }
+}
+
+//Gets called once on each page reload.
 function tagElements(highlights){
-  var domElements = []
+  var domElementsAndScores = []
   var counter = 0
   Object.keys(highlights).forEach(function(key){
     const sentence = highlights[key][0]
@@ -49,21 +68,20 @@ function tagElements(highlights){
       var domElement = $(selector).get(0)
       if(domElement !== undefined){
         domElement.setAttribute(elementIdentifier, counter)//have to reset everytime DOM is rendered.
-        domElements.push({element: domElement, score: score})
+        domElementsAndScores.push({element: domElement, score: score})
         counter += 1
       }
     }
   });
-  console.log(domElements);
-  return domElements;
+  return domElementsAndScores;
 }
 
-function addHighlights(domElements){
+function addHighlights(domElementsAndScores){
   //eventually see if you can move this code to cache.
   var leftMostPosition = null
 
-  for(var i=0; i<domElements.length; i++){
-    var domElement = domElements[i].element;
+  for(var i=0; i<domElementsAndScores.length; i++){
+    var domElement = domElementsAndScores[i].element;
     var position = $(domElement).offset();
     if(leftMostPosition == null){
       leftMostPosition = position.left;
@@ -74,9 +92,9 @@ function addHighlights(domElements){
     }
   }
 
-  for(var i=0; i<domElements.length; i++){
-    var element = domElements[i].element;
-    var score = domElements[i].score;
+  for(var i=0; i<domElementsAndScores.length; i++){
+    var element = domElementsAndScores[i].element;
+    var score = domElementsAndScores[i].score;
     var position = $(element).offset();
     var height = $(element).height();
     var highlightsDiv = createHighlightsDiv(height, score);
@@ -88,7 +106,7 @@ function addHighlights(domElements){
 
 function createHighlightsDiv(height, score){
   var highlightsDiv = document.createElement('div');
-  $(highlightsDiv).css({height: height, width: highlightsDivWidth});
+  $(highlightsDiv).css({height: height, width: highlightsDivWidth, opacity: score});
   highlightsDiv.setAttribute('class', 'highlights_div');
   return highlightsDiv
 }
