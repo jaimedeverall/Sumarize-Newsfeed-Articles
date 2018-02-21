@@ -42,12 +42,16 @@ function findNewsLink(){
 //This function will return the news url if it is a story otherwise it will return null
 function getNewsUrl(storyOptionsElement){
   var overall = $(storyOptionsElement).parent().parent().parent().get(0);
+  if(overall === undefined){
+    return null;
+  }
   var newsLinkElement = $(overall).find("a[class='_52c6']").get(0)
-  if(newsLinkElement !== undefined){
-    const url = newsLinkElement.href
-    if(url !== undefined && url !== null){
-      return url
-    }
+  if(newsLinkElement === undefined){
+    return null;
+  }
+  const url = newsLinkElement.href
+  if(url !== undefined){
+    return url
   }
   return null
 }
@@ -65,8 +69,12 @@ function isNewsCard(storyOptionsElement){
 function saveDetails(key, url){
   var details = {"source": "facebook", "article_url": url}
   chrome.runtime.sendMessage({endpoint: "summary", request_type: "GET", parameters: details}, function(response) {
-    responseObj = JSON.parse(response);
     obj = JSON.parse(window.sessionStorage.getItem(key));
+    //If there is no key in sessionStorage, something has gone wrong so we don't do anything.
+    if(obj === null){
+      return;
+    }
+    responseObj = JSON.parse(response);
     obj.loaded = true;
     obj.author_reputability = responseObj.author_reputability;
     obj.time_to_read = responseObj.time_to_read;
@@ -82,7 +90,11 @@ function addButtonsAndDialogs() {
   $("a[aria-label='Story options']").each(function(index, element){
     const url = getNewsUrl(element);
 
-    if(isElementInViewport(element) && url !== null){
+    if(url === null){
+      return;
+    }
+
+    if(isElementInViewport(element)){
       const key = identifier + url;
       var existingObj = JSON.parse(window.sessionStorage.getItem(key));
 
@@ -151,6 +163,10 @@ function handleExpandButtonClick(event, key){
     if(element.id !== undefined && element.id.includes(key)){
       var obj = JSON.parse(window.sessionStorage.getItem(key));
 
+      if(obj === null){
+        return;
+      }
+
       if(element.style.visibility == "visible"){
         element.style.visibility = "hidden";
         obj.visibility = "hidden";
@@ -198,7 +214,7 @@ function createDialog(key, loaded){
 function createTriangle(key){
   const triangleID = 'triangle'+ key;
   var smallTriangle = document.createElement('div');
-  smallTriangle.setAttribute('class', 'summary_dialog triangle');
+  smallTriangle.setAttribute('class', 'summary_dialog dialog_triangle');
   smallTriangle.setAttribute('id', triangleID);
   return smallTriangle;
 }
