@@ -20,7 +20,7 @@ function deleteAllAppKeys(){
 }
 
 $(window).bind('scroll resize', function(e) {
-  doSomething();
+  addButtonsAndDialogs();
 });
 
 function findNewsLink(){
@@ -72,53 +72,40 @@ function saveDetails(key, url){
     obj.time_to_read = responseObj.time_to_read;
     obj.recap = responseObj.recap;
     window.sessionStorage.setItem(key, JSON.stringify(obj));
-    doSomething();
+    addButtonsAndDialogs();
   });
 }
 
-function doSomething() {
+function addButtonsAndDialogs() {
   $(".summary_dialog").remove()
   $(".expand_button").remove()
   $("a[aria-label='Story options']").each(function(index, element){
-
-    const key = identifier + element.id;
-
-    var existingObj = null;
-    if(window.sessionStorage.getItem(key) !== null){
-      existingObj = JSON.parse(window.sessionStorage.getItem(key));
-    }
-
     const url = getNewsUrl(element);
 
     if(isElementInViewport(element) && url !== null){
+      const key = identifier + url;
+      var existingObj = JSON.parse(window.sessionStorage.getItem(key));
+
       var visibility = 'hidden';
       var loaded = false;
 
       if(existingObj === null){
-        var newObj = {visibility: 'hidden', loaded: false, url: url};
+        var newObj = {visibility: 'hidden', loaded: false};
         window.sessionStorage.setItem(key, JSON.stringify(newObj));
         saveDetails(key, url);
       }else{
-        if(url !== existingObj.url){
-          console.log('old url' , existingObj.url)
-          console.log('new url' , url)
-          existingObj.loaded = false
-          existingObj.url = url
-          window.sessionStorage.setItem(key, JSON.stringify(existingObj));
-          saveDetails(key, url)
-        }
         visibility = existingObj.visibility;
         loaded = existingObj.loaded;
       }
 
       var position = $(element).offset();
     
-      var expandButton = createExpandButton(element.id);
-      var dialog = createDialog(element.id, loaded);
-      var triangle = createTriangle(element.id);
+      var expandButton = createExpandButton(key);
+      var dialog = createDialog(key, loaded);
+      var triangle = createTriangle(key);
 
       expandButton.onclick = function(e){
-        handleExpandButtonClick(e, element.id);
+        handleExpandButtonClick(e, key);
       }
 
       $(dialog).css({visibility: visibility});
@@ -159,10 +146,9 @@ function positionTriangle(triangle, position){
   $(triangle).css({left: position.left - 24, top: position.top + 20})
 }
 
-function handleExpandButtonClick(event, id){
+function handleExpandButtonClick(event, key){
   $(".summary_dialog").each(function(index, element){
-    if(element.id !== undefined && element.id.includes(id)){
-      const key = identifier + id
+    if(element.id !== undefined && element.id.includes(key)){
       var obj = JSON.parse(window.sessionStorage.getItem(key));
 
       if(element.style.visibility == "visible"){
@@ -178,9 +164,8 @@ function handleExpandButtonClick(event, id){
   })
 }
 
-function createDialog(id, loaded){
-  const dialogID = 'dialog' + id;
-  const key = identifier + id;
+function createDialog(key, loaded){
+  const dialogID = 'dialog' + key;
   var dialog = document.createElement('div');
   dialog.setAttribute('id', dialogID);
   dialog.setAttribute('class', 'summary_dialog dialog_background');
@@ -210,23 +195,23 @@ function createDialog(id, loaded){
   return dialog
 }
 
-function createTriangle(id){
-  const triangleID = 'triangle'+ id;
+function createTriangle(key){
+  const triangleID = 'triangle'+ key;
   var smallTriangle = document.createElement('div');
   smallTriangle.setAttribute('class', 'summary_dialog triangle');
   smallTriangle.setAttribute('id', triangleID);
   return smallTriangle;
 }
 
-function createExpandButton(id){
-  const buttonID = 'expandButton' + id;
+function createExpandButton(key){
+  const buttonID = 'expandButton' + key;
   var expandButton = document.createElement('input');
-  var url = chrome.runtime.getURL('images/expandButton.png')
+  var imageUrl = chrome.runtime.getURL('images/expandButton.png')
   expandButton.style.height = '25px';
   expandButton.style.width = '25px';
   expandButton.setAttribute('id', buttonID);
   expandButton.setAttribute('type', 'image');
-  expandButton.setAttribute('src', url);
+  expandButton.setAttribute('src', imageUrl);
   expandButton.setAttribute('class', 'expand_button');
   return expandButton
 }
@@ -239,7 +224,3 @@ function isElementInViewport(element){
   var viewportBottom = viewportTop + $(window).height();
   return elementBottom > viewportTop && elementTop < viewportBottom;
 };
-
-function isNews(url){
-  return url !== null && url.includes("vox");
-}
