@@ -13,8 +13,11 @@ function saveHighlights(url){
     var details = {article_url: url}
     chrome.runtime.sendMessage({endpoint: 'highlights', request_type: 'GET', parameters: details}, function(response) {
       var res = JSON.parse(response);
-      window.sessionStorage.setItem(serverResponseIdentifier, JSON.stringify(res.highlights));
-      process(res.highlights);
+      var highlights = res.highlights;
+      if(highlights !== undefined){
+        window.sessionStorage.setItem(serverResponseIdentifier, JSON.stringify(highlights));
+        process(highlights);
+      }
     });
   }else{
     process(highlights);
@@ -23,7 +26,6 @@ function saveHighlights(url){
 
 //Gets called once on each page reload.
 function process(highlights){
-  console.log(highlights);
   domElementsAndScores = tagElements(highlights);
   normalizeScores(domElementsAndScores);
   console.log(domElementsAndScores);

@@ -30,6 +30,13 @@
       "all_frames": true
     },
     {
+      "matches": ["https://www.vox.com/*", "https://www.nytimes.com/*"],
+      "css": ["sentences.css"],
+      "js": ["jquery-3.3.1.min.js", "sentences.js"],
+      "run_at": "document_end",
+      "all_frames": true
+    },
+    {
       "matches": ["https://*/*", "http://*/*"],
       "js":  ["jquery-3.3.1.min.js", "user_highlights.js"], 
       "css": ["highlights.css"]

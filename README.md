@@ -36,8 +36,9 @@ Jaime| Design thinking, Machine Learning, Frontend Design | Communicative, Inclu
 # Weekly Logs: 
 Week 1: https://quip.com/lfBPAKTCJW8b  
 Week 2: https://quip.com/P03GAhX77n3g  
-Week 3: https://quip.com/nnHHAxqeObHb
-Week 4: https://quip.com/53I9A1KIABBY
+Week 3: https://quip.com/nnHHAxqeObHb  
+Week 4: https://quip.com/53I9A1KIABBY  
+Week 5: https://quip.com/PYdCAIrpwWaj  
 
 # Team Communication:
 1. We are communicating internally through Facebook messenger. 
