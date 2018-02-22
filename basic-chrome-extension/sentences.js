@@ -9,6 +9,7 @@ function saveTopSentences(url){
   if(topSentences === null){
     var details = {article_url: url}
     chrome.runtime.sendMessage({endpoint: 'top_sentences', request_type: 'GET', parameters: details}, function(response) {
+      console.log(response);
       var topSentences = JSON.parse(response);
       window.sessionStorage.setItem(serverResponseIdentifier, JSON.stringify(topSentences));
       highlightTopSentences(topSentences);
@@ -18,7 +19,12 @@ function saveTopSentences(url){
   }
 }
 
+function replacer(match){
+  return "<span class='highlighted_sentence'>" + match + "</span>";
+}
+
 function highlightTopSentences(topSentences){
+  console.log(topSentences);
   Object.keys(topSentences).forEach(function(sentence){
     var score = topSentences[sentence];
     if(sentence.length > 0){
@@ -28,10 +34,10 @@ function highlightTopSentences(topSentences){
         const oldInnerHTML = domElement.innerHTML;
         console.log(oldInnerHTML);
         console.log(sentence);
-        const regexString = sentence.replace(new RegExp(' ', 'g'), '.*?');
+        const regexString = sentence.replace(new RegExp('[^a-zA-Z0-9]', 'g'), '.*?');
         console.log(regexString);
-        const re = new RegExp(regexString);
-        const newInnerHTML = oldInnerHTML.replace(re, "<span class='highlighted_sentence'>" + sentence + "</span>");
+        const re = new RegExp(regexString, 'g');
+        const newInnerHTML = oldInnerHTML.replace(re, replacer);
         console.log(newInnerHTML);
         domElement.innerHTML = newInnerHTML;
       }
