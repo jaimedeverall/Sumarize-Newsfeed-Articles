@@ -1,27 +1,21 @@
 console.log('reloading');
+
 const highlightsDivWidth = 30;
 const spacing = 8;
-const serverResponseIdentifier = 'gisthighlights_' + document.URL + '_raw_response';
 const elementIdentifier = 'gisthighlights'
 
 saveHighlights(document.URL);
 
 //Gets called once on each page reload.
 function saveHighlights(url){
-  const highlights = JSON.parse(window.sessionStorage.getItem(serverResponseIdentifier));
-  if(highlights === null){
-    var details = {article_url: url}
-    chrome.runtime.sendMessage({endpoint: 'highlights', request_type: 'GET', parameters: details}, function(response) {
-      var res = JSON.parse(response);
-      var highlights = res.highlights;
-      if(highlights !== undefined){
-        window.sessionStorage.setItem(serverResponseIdentifier, JSON.stringify(highlights));
-        process(highlights);
-      }
-    });
-  }else{
-    process(highlights);
-  }
+  var details = {article_url: url}
+  chrome.runtime.sendMessage({endpoint: 'highlights', request_type: 'GET', parameters: details}, function(response) {
+    var res = JSON.parse(response);
+    var highlights = res.highlights;
+    if(highlights !== undefined){
+      process(highlights);
+    }
+  });
 }
 
 //Gets called once on each page reload.
