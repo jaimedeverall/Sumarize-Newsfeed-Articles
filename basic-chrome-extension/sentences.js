@@ -6,9 +6,10 @@ saveTopSentences(document.URL);
 function saveTopSentences(url){
   var details = {article_url: url}
   chrome.runtime.sendMessage({endpoint: 'top_sentences', request_type: 'GET', parameters: details}, function(response) {
-    console.log(response);
     var topSentences = JSON.parse(response);
-    highlightTopSentences(topSentences);
+    if(Object.keys(topSentences).length > 0){
+      highlightTopSentences(topSentences);
+    }
   });
 }
 

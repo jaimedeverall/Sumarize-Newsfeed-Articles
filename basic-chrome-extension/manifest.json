@@ -23,14 +23,14 @@
       "all_frames": true
     },
     {
-      "matches": ["https://www.vox.com/*", "https://www.nytimes.com/*"],
+      "matches": ["https://*/*", "http://*/*"],
       "css": ["highlights.css"],
       "js": ["jquery-3.3.1.min.js", "highlights.js"],
       "run_at": "document_end",
       "all_frames": true
     },
     {
-      "matches": ["https://www.vox.com/*", "https://www.nytimes.com/*", "https://www.bbc.com/*"],
+      "matches": ["https://*/*", "http://*/*"],
       "css": ["sentences.css"],
       "js": ["jquery-3.3.1.min.js", "sentences.js"],
       "run_at": "document_end",

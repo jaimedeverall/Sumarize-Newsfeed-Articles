@@ -12,7 +12,7 @@ function saveHighlights(url){
   chrome.runtime.sendMessage({endpoint: 'highlights', request_type: 'GET', parameters: details}, function(response) {
     var res = JSON.parse(response);
     var highlights = res.highlights;
-    if(highlights !== undefined){
+    if(highlights !== undefined && Object.keys(highlights).length > 0){
       process(highlights);
     }
   });
