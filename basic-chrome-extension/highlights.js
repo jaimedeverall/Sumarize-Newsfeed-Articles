@@ -21,6 +21,9 @@ function saveHighlights(url){
 //Gets called once on each page reload.
 function process(highlights){
   domElementsAndScores = tagElements(highlights);
+  if(domElementsAndScores.length === 0){
+    return;//stop before we set the interval if there are no matched domElements.
+  }
   normalizeScores(domElementsAndScores);
   console.log(domElementsAndScores);
   var looperCounter = 0;
@@ -60,8 +63,8 @@ function tagElements(highlights){
     const sentence = highlights[key][0]
     const score = highlights[key][1]
     if(sentence.length > 0){
-      const selector = `h1:contains('${sentence}'), h2:contains('${sentence}'), h3:contains('${sentence}'), h4:contains('${sentence}'), h5:contains('${sentence}'), h6:contains('${sentence}'), p:contains('${sentence}')`;
-      var domElement = $(selector).get(0)
+      const selector = `:contains('${sentence}')`;
+      var domElement = $(selector).get(-1); //get the element closest to the text.
       if(domElement !== undefined){
         domElement.setAttribute(elementIdentifier, counter)//have to reset everytime DOM is rendered.
         domElementsAndScores.push({element: domElement, score: score})
