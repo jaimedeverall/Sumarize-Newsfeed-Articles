@@ -1,4 +1,4 @@
-console.log('reloading');
+console.log('reloading highlights');
 
 const highlightsDivWidth = 30;
 const spacing = 8;
@@ -8,14 +8,20 @@ saveHighlights(document.URL);
 
 //Gets called once on each page reload.
 function saveHighlights(url){
-  var details = {article_url: url}
-  chrome.runtime.sendMessage({endpoint: 'highlights', request_type: 'GET', parameters: details}, function(response) {
-    var res = JSON.parse(response);
-    var highlights = res.highlights;
-    if(highlights !== undefined && Object.keys(highlights).length > 0){
-      process(highlights);
-    }
-  });
+  const highlights = JSON.parse(window.sessionStorage.getItem(serverResponseIdentifier));
+  if(highlights === null){
+    var details = {article_url: url}
+    chrome.runtime.sendMessage({endpoint: 'highlights', request_type: 'GET', parameters: details}, function(response) {
+      var res = JSON.parse(response);
+      var highlights = res.highlights;
+      if(highlights !== undefined && Object.keys(highlights).length > 0){
+        window.sessionStorage.setItem(serverResponseIdentifier, JSON.stringify(highlights));
+        process(highlights);
+      }
+    });
+  }else{
+    process(highlights);
+  }
 }
 
 //Gets called once on each page reload.

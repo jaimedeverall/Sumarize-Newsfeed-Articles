@@ -1,6 +1,6 @@
 const identifier = "gistfacebook"
 
-console.log('reloading');
+console.log('reloading facebook');
 
 $(".summary_dialog").remove()
 $(".expand_button").remove()

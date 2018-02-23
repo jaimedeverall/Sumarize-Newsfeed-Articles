@@ -23,6 +23,13 @@
       "all_frames": true
     },
     {
+      "matches": ["https://www.twitter.com/*"],
+      "css": ["twitter.css"],
+      "js": ["jquery-3.3.1.min.js", "twitter.js"],
+      "run_at": "document_end",
+      "all_frames": true
+    },
+    {
       "matches": ["https://*/*", "http://*/*"],
       "css": ["highlights.css"],
       "js": ["jquery-3.3.1.min.js", "highlights.js"],
