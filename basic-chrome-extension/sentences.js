@@ -1,17 +1,18 @@
 console.log('reloading sentences');
+const sentencesServerResponse = 'gistsentences_response' + document.URL;
 
 saveTopSentences(document.URL);
 
 //Gets called once on each page reload.
 function saveTopSentences(url){
-  const topSentences = JSON.parse(window.sessionStorage.getItem(serverResponseIdentifier));
+  const topSentences = JSON.parse(window.sessionStorage.getItem(sentencesServerResponse));
   if(topSentences === null){
     var details = {article_url: url}
     chrome.runtime.sendMessage({endpoint: 'top_sentences', request_type: 'GET', parameters: details}, function(response) {
       console.log(response);
       var topSentences = JSON.parse(response);
       if(Object.keys(topSentences).length > 0){
-        window.sessionStorage.setItem(serverResponseIdentifier, JSON.stringify(topSentences));
+        window.sessionStorage.setItem(sentencesServerResponse, JSON.stringify(topSentences));
         highlightTopSentences(topSentences);
       }
     });

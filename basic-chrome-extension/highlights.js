@@ -3,19 +3,20 @@ console.log('reloading highlights');
 const highlightsDivWidth = 30;
 const spacing = 8;
 const elementIdentifier = 'gisthighlights'
+const highlightsServerResponseKey = 'gisthighlights_response' + document.URL;
 
 saveHighlights(document.URL);
 
 //Gets called once on each page reload.
 function saveHighlights(url){
-  const highlights = JSON.parse(window.sessionStorage.getItem(serverResponseIdentifier));
+  const highlights = JSON.parse(window.sessionStorage.getItem(highlightsServerResponseKey));
   if(highlights === null){
     var details = {article_url: url}
     chrome.runtime.sendMessage({endpoint: 'highlights', request_type: 'GET', parameters: details}, function(response) {
       var res = JSON.parse(response);
       var highlights = res.highlights;
       if(highlights !== undefined && Object.keys(highlights).length > 0){
-        window.sessionStorage.setItem(serverResponseIdentifier, JSON.stringify(highlights));
+        window.sessionStorage.setItem(highlightsServerResponseKey, JSON.stringify(highlights));
         process(highlights);
       }
     });
@@ -24,24 +25,23 @@ function saveHighlights(url){
   }
 }
 
-//Gets called once on each page reload.
+//Called once on each page reload.
 function process(highlights){
   domElementsAndScores = tagElements(highlights);
   if(domElementsAndScores.length === 0){
     return;//stop before we set the interval if there are no matched domElements.
   }
   normalizeScores(domElementsAndScores);
-  console.log(domElementsAndScores);
-  var looperCounter = 0;
-  var looper = setInterval(function(){
+  //disconnect the mutation observer so it doesn't detect adding the highlight divs
+  var highlightsMutationObserverConfig = {attributes: true, childList: true};
+  // Create an observer instance linked to the callback function
+  var highlightsMutationObserver = new MutationObserver(function(mutationsList){
+    highlightsMutationObserver.disconnect();
     $('.highlights_div').remove();
-    console.log(looperCounter);
-    addHighlights(domElementsAndScores);
-    looperCounter++;
-    if (looperCounter >= 60){
-      clearInterval(looper);
-    }
-  }, 1000);
+    addHighlightDivs(domElementsAndScores);
+    highlightsMutationObserver.observe(document.body, highlightsMutationObserverConfig);
+  });
+  highlightsMutationObserver.observe(document.body, highlightsMutationObserverConfig);
 }
 
 //Gets called once on each page reload.
@@ -81,7 +81,8 @@ function tagElements(highlights){
   return domElementsAndScores;
 }
 
-function addHighlights(domElementsAndScores){
+//This function gets called every time the DOM changes.
+function addHighlightDivs(domElementsAndScores){
   //eventually see if you can move this code to cache.
   var leftMostPosition = null
 
