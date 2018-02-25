@@ -22,6 +22,7 @@ function saveTopSentences(url){
 }
 
 function replacer(match){
+  console.log(match);
   return "<span class='highlighted_sentence'>" + match + "</span>";
 }
 
@@ -34,9 +35,13 @@ function highlightTopSentences(topSentences){
       var domElement = $(selector).get(-1); //gets the last matched element i.e. the element closest to the text.
       if(domElement !== undefined){
         const oldInnerHTML = domElement.innerHTML;
+        console.log('oldInnerHTML', oldInnerHTML);
+        console.log('sentence', sentence);
         const regexString = sentence.replace(new RegExp('[^a-zA-Z0-9]', 'g'), '.*?');
+        console.log('regexString', regexString);
         const re = new RegExp(regexString, 'g');
         const newInnerHTML = oldInnerHTML.replace(re, replacer);
+        console.log('newInnerHTML', newInnerHTML);
         domElement.innerHTML = newInnerHTML;
       }
     }

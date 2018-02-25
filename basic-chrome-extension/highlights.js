@@ -32,7 +32,9 @@ function process(highlights){
     return;//stop before we set the interval if there are no matched domElements.
   }
   normalizeScores(domElementsAndScores);
-  //disconnect the mutation observer so it doesn't detect adding the highlight divs
+
+  addHighlightDivs(domElementsAndScores);
+
   var highlightsMutationObserverConfig = {attributes: true, childList: true};
   // Create an observer instance linked to the callback function
   var highlightsMutationObserver = new MutationObserver(function(mutationsList){
