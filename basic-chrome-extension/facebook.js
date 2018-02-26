@@ -23,8 +23,59 @@ $(window).bind('scroll resize', function(e) {
   addButtonsAndDialogs();
 });
 
+$(window).click(function(e){
+  var ignoreClick = false
+
+  $(".expand_button").each(function(index, element){
+
+    if(elementClicked(e.pageX, e.pageY, element)){
+      ignoreClick = true;
+    }
+
+  })
+
+  if(ignoreClick === true){
+    return;
+  }
+
+  //summary_dialog class includes triangles and dialogs.
+  $(".summary_dialog").each(function(index, element){
+    //If any triangle or dialog is clicked then we can ignore this click.
+    if(elementClicked(e.pageX, e.pageY, element)){
+      ignoreClick = true;
+    }
+
+  })
+
+  if(ignoreClick === true){
+    return
+  }
+
+  Object.keys(window.sessionStorage).forEach(function(key){
+    if(key.includes(identifier)){ //the key belongs to our extension
+      var obj = JSON.parse(window.sessionStorage.getItem(key));
+      if(obj === null){
+        return;
+      }
+      obj.visibility = 'hidden';
+      window.sessionStorage.setItem(key, JSON.stringify(obj));
+    }
+  });
+
+  addButtonsAndDialogs();
+  
+});
+
+function elementClicked(x, y, element){
+  var elementTop = $(element).offset().top;
+  var elementBottom = elementTop + $(element).outerHeight();
+  var elementLeft = $(element).offset().left;
+  var elementRight = elementLeft + $(element).outerWidth();
+  return x >= elementLeft && x <= elementRight && y >= elementTop && y <= elementBottom;
+}
+
 function findNewsLink(){
-  $("a[aria-label='Story options'").each(function(index, element){
+  $("a[aria-label='Story options']").each(function(index, element){
     if(isElementInViewport(element)){
       var overall = $(element).parent().parent().parent().get(0);
       var newsLinkElement = $(overall).find("a[class='_52c6']").get(0)
@@ -74,6 +125,7 @@ function saveDetails(key, url){
     if(obj === null){
       return;
     }
+
     responseObj = JSON.parse(response);
     obj.loaded = true;
     obj.author_reputability = responseObj.author_reputability;
@@ -160,7 +212,7 @@ function positionTriangle(triangle, position){
 
 function handleExpandButtonClick(event, key){
   $(".summary_dialog").each(function(index, element){
-    if(element.id !== undefined && element.id.includes(key)){
+    if(element.id !== undefined && element.id === key){
       var obj = JSON.parse(window.sessionStorage.getItem(key));
 
       if(obj === null){
@@ -181,7 +233,7 @@ function handleExpandButtonClick(event, key){
 }
 
 function createDialog(key, loaded){
-  const dialogID = 'dialog' + key;
+  const dialogID = key;
   var dialog = document.createElement('div');
   dialog.setAttribute('id', dialogID);
   dialog.setAttribute('class', 'summary_dialog dialog_background');
@@ -212,7 +264,7 @@ function createDialog(key, loaded){
 }
 
 function createTriangle(key){
-  const triangleID = 'triangle'+ key;
+  const triangleID = key;
   var smallTriangle = document.createElement('div');
   smallTriangle.setAttribute('class', 'summary_dialog dialog_triangle');
   smallTriangle.setAttribute('id', triangleID);
@@ -220,7 +272,7 @@ function createTriangle(key){
 }
 
 function createExpandButton(key){
-  const buttonID = 'expandButton' + key;
+  const buttonID = key;
   var expandButton = document.createElement('input');
   var imageUrl = chrome.runtime.getURL('images/expandButton.png')
   expandButton.style.height = '25px';
