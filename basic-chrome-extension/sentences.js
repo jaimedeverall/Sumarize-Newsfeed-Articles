@@ -25,6 +25,7 @@ function replacer(match){
   return "<span class='highlighted_sentence'>" + match + "</span>";
 }
 
+//Could consider also reversing oldInnerHTML and regexString and see which of the matches are shorter.
 function highlightTopSentences(topSentences){
   console.log('topSentences', topSentences);
   Object.keys(topSentences).forEach(function(sentence){

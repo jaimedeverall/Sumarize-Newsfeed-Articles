@@ -39,11 +39,15 @@ function process(highlights){
   // Create an observer instance linked to the callback function
   var highlightsMutationObserver = new MutationObserver(function(mutationsList){
     highlightsMutationObserver.disconnect();
-    $('.highlights_div').remove();
     addHighlightDivs(domElementsAndScores);
     highlightsMutationObserver.observe(document.body, highlightsMutationObserverConfig);
   });
   highlightsMutationObserver.observe(document.body, highlightsMutationObserverConfig);
+
+  $(window).bind('scroll resize', function(e) {
+    addHighlightDivs(domElementsAndScores);
+  });
+  
 }
 
 //Gets called once on each page reload.
@@ -85,6 +89,7 @@ function tagElements(highlights){
 
 //This function gets called every time the DOM changes.
 function addHighlightDivs(domElementsAndScores){
+  $('.highlights_div').remove();
   //eventually see if you can move this code to cache.
   var leftMostPosition = null
 
