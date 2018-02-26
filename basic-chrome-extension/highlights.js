@@ -3,7 +3,7 @@ console.log('reloading highlights');
 const highlightsDivWidth = 30;
 const spacing = 8;
 const elementIdentifier = 'gisthighlights'
-const highlightsServerResponseKey = 'gisthighlights_response' + document.URL;
+const highlightsServerResponseKey = 'gisthighlights_response';
 
 saveHighlights(document.URL);
 

@@ -1,5 +1,5 @@
 console.log('reloading sentences');
-const sentencesServerResponse = 'gistsentences_response' + document.URL;
+const sentencesServerResponse = 'gistsentences_response';
 
 saveTopSentences(document.URL);
 
@@ -22,12 +22,11 @@ function saveTopSentences(url){
 }
 
 function replacer(match){
-  console.log(match);
   return "<span class='highlighted_sentence'>" + match + "</span>";
 }
 
 function highlightTopSentences(topSentences){
-  console.log(topSentences);
+  console.log('topSentences', topSentences);
   Object.keys(topSentences).forEach(function(sentence){
     var score = topSentences[sentence];
     if(sentence.length > 0){
@@ -35,13 +34,9 @@ function highlightTopSentences(topSentences){
       var domElement = $(selector).get(-1); //gets the last matched element i.e. the element closest to the text.
       if(domElement !== undefined){
         const oldInnerHTML = domElement.innerHTML;
-        console.log('oldInnerHTML', oldInnerHTML);
-        console.log('sentence', sentence);
-        const regexString = sentence.replace(new RegExp('[^a-zA-Z0-9]', 'g'), '.*?');
-        console.log('regexString', regexString);
-        const re = new RegExp(regexString, 'g');
+        const regexString = sentence.replace(new RegExp('[^a-zA-Z0-9]', 'g'), '.+?');
+        var re = new RegExp(regexString);
         const newInnerHTML = oldInnerHTML.replace(re, replacer);
-        console.log('newInnerHTML', newInnerHTML);
         domElement.innerHTML = newInnerHTML;
       }
     }
