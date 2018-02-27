@@ -1,10 +1,12 @@
 #from newspaper import 
-import url
 import json 
+import sys
+from newspaper import urls
+
 
 url = sys.argv[1]
 
-is_news = valid_url(url)
+is_news = urls.valid_url(url)
 
 is_news_data = {}
 is_news_data["is_news"] = is_news
