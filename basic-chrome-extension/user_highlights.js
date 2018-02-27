@@ -1,9 +1,10 @@
 console.log('user highlight capability activated')
 
+
 // source: https://stackoverflow.com/questions/4712310/javascript-how-to-detect-if-a-word-is-highlighted
 function createHighlightBox() {
   var dialog = document.createElement('div');
-  dialog.setAttribute("class", "random")
+  dialog.setAttribute("class", "highlight_box")
 
   var highlightButton = document.createElement('input');
 
@@ -18,7 +19,6 @@ function createHighlightBox() {
   dialog.appendChild(highlightButton); 
   return dialog
 }
-
 
 
 function getSelectedText() {
@@ -40,9 +40,9 @@ function resizeHighlightBox(highlight_box) {
   $(highlight_box).css({width: `${newHeight}px`}); 
 }
     
-function createTriangle(){
+function createRedTriangle(){
   var smallTriangle = document.createElement('div');
-  smallTriangle.setAttribute('class', 'summary_dialog triangle');
+  smallTriangle.setAttribute('class', 'red_triangle');
   return smallTriangle;
 }
 
@@ -67,7 +67,7 @@ function popup_text() {
     leftBound = r.left + 5 + $(window).scrollLeft();
     topBound = r.top - 50 - 8 + $(window).scrollTop(); 
 
-    var triangle = createTriangle() ;
+    var triangle = createRedTriangle() ;
     document.body.appendChild(triangle);
 
     $(triangle).css('left', r.left + 15 + $(window).scrollLeft())
@@ -97,10 +97,11 @@ function remove_popup(e) {
       highlightClicked(); 
     }
   }
-  $('.random').remove();
-  $('.triangle').remove();
+  $('.highlight_box').remove();
+  $('.red_triangle').remove();
   popup_visible = false
 }
+
 
 var popup_visible = false
 var leftBound = 0 
@@ -111,6 +112,5 @@ var last_highlight = ""
 
 document.onkeyup = popup_text; 
 document.onmouseup = popup_text; 
-
 document.onmousedown = remove_popup;
 
