@@ -254,12 +254,36 @@ function createDialog(key, loaded){
 
   var summaryDiv = document.createElement('div');
   summaryDiv.setAttribute('class', 'summary_text');
-  var summaryParagraph = document.createElement('p');
-  summaryParagraph.innerHTML = recap;
-  summaryDiv.appendChild(summaryParagraph);
+  var res = recap.split(".")
+  var list = document.createElement('ul') 
+  $(list).css("list-style-type", "disc")
+  $(list).css("list-style-position", "inside")
+  //list.setAttribute("list-style-type", "disc")
+  //list.setAttribute('list-style-position', 'inside')
+  //list.setAttribute("margin-left", "100px")
+  //dialog.setAttribute("padding-left", "10px")
+  //list.setAttribute("padding-left", "10px")
+  $(list).css('padding-left', '10px')
+
+  for (var i = 0; i < res.length; i++) { 
+    if (res[i].length == 0) {
+      continue
+    }
+    var element = document.createElement('li')
+    //element.setAttribute('padding-left', '10px')
+    element.innerHTML = res[i] + "<br/><br/>"
+    list.appendChild(element)
+  }
+
+  //var summaryParagraph = document.createElement('p');
+  //summaryParagraph.innerHTML = recap;
+  //summaryDiv.appendChild(summaryParagraph);
+  //summaryDiv.appendChild(list); 
+  
 
   dialog.appendChild(metricsDiv);
-  dialog.appendChild(summaryDiv);
+  dialog.appendChild(list)
+  //dialog.appendChild(summaryDiv);
   return dialog
 }
 

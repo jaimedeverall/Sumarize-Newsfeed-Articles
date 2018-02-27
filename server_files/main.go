@@ -128,11 +128,23 @@ func topSentenceHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func isNewsArticleHandler(w http.ResponseWriter, r *http.Request) { 
+	article_url := r.FormValue("article_url")
+	if (len(article_url) == 0) { 
+		http.Error(w, "Please pass in an article_url", http.StatusBadRequest)
+	} else { 
+		w.Header().Set("Content-Type", "application/json")
+		request_body := isNewsArticle(article_url)
+		json.NewEncoder(w).Encode(request_body)
+	}
+}
+
 func main() {
 	http.HandleFunc("/summary", summaryHandler)
 	http.HandleFunc("/highlights", highlightsHandler) 
 	http.HandleFunc("/metadata", metadataHandler) 
 	http.HandleFunc("/top_sentences", topSentenceHandler)
+	http.HandleFunc("/is_news_article", isNewsArticleHandler)
 	fmt.Printf("Serving web pages on port 8080...\n")
 	error := http.ListenAndServe(":8080", nil)
 	fmt.Println(error) 
