@@ -1,18 +1,8 @@
 console.log('reloading sentences');
 const sentencesServerResponse = 'gistsentences_response' + document.URL;
 
-isNewsUrl(document.URL);
-
-function isNewsUrl(url){
-  var details = {article_url: url}
-  chrome.runtime.sendMessage({endpoint: 'is_news_article', request_type: 'GET', parameters: details}, function(response) {
-    var is_news = JSON.parse(response)['is_news'];
-    console.log(url);
-    console.log(is_news);
-    if(is_news === true){
-      saveTopSentences(url);
-    }
-  });
+function setupSentences(){
+  saveTopSentences(document.URL);
 }
 
 //Gets called once on each page reload.
@@ -47,7 +37,7 @@ function highlightTopSentences(topSentences){
       var domElement = $(selector).get(-1); //gets the last matched element i.e. the element closest to the text.
       if(domElement !== undefined){
         const oldInnerHTML = domElement.innerHTML;
-        const regexString = sentence.replace(new RegExp('[^a-zA-Z0-9]', 'g'), '.+?');
+        const regexString = sentence.replace(new RegExp('[^a-zA-Z0-9]', 'g'), '.*?');
         var re = new RegExp(regexString);
         const newInnerHTML = oldInnerHTML.replace(re, replacer);
         domElement.innerHTML = newInnerHTML;

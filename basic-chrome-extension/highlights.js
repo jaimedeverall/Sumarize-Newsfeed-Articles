@@ -7,17 +7,21 @@ const highlightsServerResponseKey = 'gisthighlights_response' + document.URL
 
 isNewsUrl(document.URL);
 
-//Gets called once on each page reload. First function to be called.
+//Gets called once on each page reload. This function takes care of loading highlights, sentences and user highlights.
 function isNewsUrl(url){
   var details = {article_url: url}
   chrome.runtime.sendMessage({endpoint: 'is_news_article', request_type: 'GET', parameters: details}, function(response) {
     var is_news = JSON.parse(response)['is_news'];
-    console.log(url)
-    console.log(is_news);
     if(is_news === true){
-      saveHighlights(url);
+      setupUserHighlights();
+      setupSentences();
+      setupHighlights();
     }
   });
+}
+
+function setupHighlights(){
+  saveHighlights(document.URL);
 }
 
 //Gets called once on each page reload if the url is a news article. Gets called by isNewsUrl.
@@ -41,9 +45,11 @@ function saveHighlights(url){
 //Called once on each page reload if the url is a news article. Gets called by saveHighlights.
 function process(highlights){
   domElementsAndScores = tagElements(highlights);
+
   if(domElementsAndScores.length === 0){
     return;//stop before we set the interval if there are no matched domElements.
   }
+
   normalizeScores(domElementsAndScores);
 
   addHighlightDivs(domElementsAndScores);
@@ -56,7 +62,6 @@ function process(highlights){
 
 //Gets called once on each page reload.
 function normalizeScores(domElementsAndScores){
-  //score - minScore / (maxScore - minScore)
   var minScore = 1
   var maxScore = 0
   for(var i=0; i<domElementsAndScores.length; i++){
@@ -74,7 +79,6 @@ function normalizeScores(domElementsAndScores){
 //Gets called once on each page reload.
 function tagElements(highlights){
   var domElementsAndScores = []
-  var counter = 0
   Object.keys(highlights).forEach(function(key){
     const sentence = highlights[key][0]
     const score = highlights[key][1]
@@ -82,9 +86,7 @@ function tagElements(highlights){
       const selector = `:contains('${sentence}')`;
       var domElement = $(selector).get(-1); //get the element closest to the text.
       if(domElement !== undefined){
-        domElement.setAttribute(elementIdentifier, counter)//have to reset everytime DOM is rendered.
         domElementsAndScores.push({element: domElement, score: score})
-        counter += 1
       }
     }
   });

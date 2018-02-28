@@ -1,5 +1,17 @@
 console.log('user highlight capability activated')
 
+var popup_visible = false
+var leftBound = 0 
+var topBound = 0 
+var height = 150 
+var width = 150
+var last_highlight = "" 
+
+function setupUserHighlights(){
+  document.onkeyup = popup_text; 
+  document.onmouseup = popup_text; 
+  document.onmousedown = remove_popup;
+}
 
 // source: https://stackoverflow.com/questions/4712310/javascript-how-to-detect-if-a-word-is-highlighted
 function createHighlightBox() {
@@ -101,16 +113,3 @@ function remove_popup(e) {
   $('.red_triangle').remove();
   popup_visible = false
 }
-
-
-var popup_visible = false
-var leftBound = 0 
-var topBound = 0 
-var height = 150 
-var width = 150
-var last_highlight = "" 
-
-document.onkeyup = popup_text; 
-document.onmouseup = popup_text; 
-document.onmousedown = remove_popup;
-
