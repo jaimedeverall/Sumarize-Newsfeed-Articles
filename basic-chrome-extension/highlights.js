@@ -128,3 +128,25 @@ function positionHighlightsDiv(highlightsDiv, leftMost, top){
   var left = leftMost - spacing - highlightsDivWidth;
   $(highlightsDiv).css({top: top, left: left})
 }
+
+function toggleHighlights(event) { 
+  if (event.keyCode == 79) {  //'o' 
+    console.log("toggle invoked")
+    $('.highlights_div').each(function(i, obj) {
+      $(obj).toggle(); 
+    //test
+    });
+    $('.highlighted_sentence').each(function(i, obj) {
+      console.log("highlighted sentece:", $(obj).attributes)
+      if $(obj).attributes["highlight_color"] == "98FB98" {
+        $(obj).setAttribute() 
+      } else {
+        $(obj).setAttribute() 
+      }
+    //test
+    });
+  }
+}
+
+console.log("updated version") 
+document.onkeydown = toggleHighlights

@@ -1,0 +1,16 @@
+.highlight_box {
+	position: absolute;
+	z-index: 2;
+}
+
+.red_triangle{
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #ff0000 ;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+}
