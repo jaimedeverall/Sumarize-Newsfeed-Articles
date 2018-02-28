@@ -177,9 +177,10 @@ function toggleHighlights(event) {
         $(obj).css("background-color", "#98FB98")
         //$(obj).effect("highlight", { color: "#98FB98" }, 3000);
       }
-      highlights_on = !highlights_on
+      
     //test
     });
+    highlights_on = !highlights_on
   }
 }
 
