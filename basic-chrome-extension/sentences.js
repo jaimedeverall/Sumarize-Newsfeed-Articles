@@ -1,7 +1,19 @@
 console.log('reloading sentences');
-const sentencesServerResponse = 'gistsentences_response';
+const sentencesServerResponse = 'gistsentences_response' + document.URL;
 
-saveTopSentences(document.URL);
+isNewsUrl(document.URL);
+
+function isNewsUrl(url){
+  var details = {article_url: url}
+  chrome.runtime.sendMessage({endpoint: 'is_news_article', request_type: 'GET', parameters: details}, function(response) {
+    var is_news = JSON.parse(response)['is_news'];
+    console.log(url);
+    console.log(is_news);
+    if(is_news === true){
+      saveTopSentences(url);
+    }
+  });
+}
 
 //Gets called once on each page reload.
 function saveTopSentences(url){

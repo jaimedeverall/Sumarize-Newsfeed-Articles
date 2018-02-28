@@ -3,11 +3,24 @@ console.log('reloading highlights');
 const highlightsDivWidth = 30;
 const spacing = 8;
 const elementIdentifier = 'gisthighlights'
-const highlightsServerResponseKey = 'gisthighlights_response';
+const highlightsServerResponseKey = 'gisthighlights_response' + document.URL
 
-saveHighlights(document.URL);
+isNewsUrl(document.URL);
 
-//Gets called once on each page reload.
+//Gets called once on each page reload. First function to be called.
+function isNewsUrl(url){
+  var details = {article_url: url}
+  chrome.runtime.sendMessage({endpoint: 'is_news_article', request_type: 'GET', parameters: details}, function(response) {
+    var is_news = JSON.parse(response)['is_news'];
+    console.log(url)
+    console.log(is_news);
+    if(is_news === true){
+      saveHighlights(url);
+    }
+  });
+}
+
+//Gets called once on each page reload if the url is a news article. Gets called by isNewsUrl.
 function saveHighlights(url){
   const highlights = JSON.parse(window.sessionStorage.getItem(highlightsServerResponseKey));
   if(highlights === null){
@@ -25,7 +38,7 @@ function saveHighlights(url){
   }
 }
 
-//Called once on each page reload.
+//Called once on each page reload if the url is a news article. Gets called by saveHighlights.
 function process(highlights){
   domElementsAndScores = tagElements(highlights);
   if(domElementsAndScores.length === 0){
@@ -35,19 +48,10 @@ function process(highlights){
 
   addHighlightDivs(domElementsAndScores);
 
-  var highlightsMutationObserverConfig = {attributes: true, childList: true};
-  // Create an observer instance linked to the callback function
-  var highlightsMutationObserver = new MutationObserver(function(mutationsList){
-    highlightsMutationObserver.disconnect();
-    addHighlightDivs(domElementsAndScores);
-    highlightsMutationObserver.observe(document.body, highlightsMutationObserverConfig);
-  });
-  highlightsMutationObserver.observe(document.body, highlightsMutationObserverConfig);
-
   $(window).bind('scroll resize', function(e) {
     addHighlightDivs(domElementsAndScores);
   });
-  
+
 }
 
 //Gets called once on each page reload.
