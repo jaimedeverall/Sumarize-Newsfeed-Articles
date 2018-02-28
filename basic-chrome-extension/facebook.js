@@ -128,10 +128,6 @@ function saveDetails(key, url){
     }
 
     responseObj = JSON.parse(response);
-    //If the recap returned by the server is not present or is the empty string.
-    if(responseObj.recap === undefined || responseObj.recap.length === 0){
-      return;
-    }
 
     obj.loaded = true;
     obj.author_reputability = responseObj.author_reputability;
