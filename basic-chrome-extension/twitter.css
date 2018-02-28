@@ -1,0 +1,53 @@
+.expand_button {
+  visibility: visible;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.summary_dialog {
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.dialog_background{
+  height: 200px;
+  width: 400px;
+  background-color: white;
+  border-style: solid;
+  border-color: #4468B0;
+  border-width: 2px;
+  display: flex;
+  flex-direction: column;
+}
+
+.metrics_title{
+  color: #4468B0;
+}
+
+.metrics_text {
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.38;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.summary_text{
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.38;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.dialog_triangle{
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #4468B0;
+}
