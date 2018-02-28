@@ -108,14 +108,15 @@ function addButtonsAndDialogs() {
   $(".summary_dialog").remove()
   $(".expand_button").remove()
   $(".tweet").each(function(index, element){
-    if(!isElementInViewport(element)){
-      return
-    }
 
     const div = $(element).find("div[data-card-url]").get(0)
-    const more = $(element).find("div[title='More']").get(0)
+    const more = $(element).find(".dropdown-toggle").get(0)
     if(more === undefined || div === undefined){
-      return
+      return;
+    }
+
+    if(!isElementInViewport(more)){
+      return;
     }
 
     var url = div.getAttribute('data-card-url')
@@ -135,7 +136,7 @@ function addButtonsAndDialogs() {
       loaded = existingObj.loaded;
     }
 
-    var position = $(element).offset();
+    var position = $(more).offset();
     
     var expandButton = createExpandButton(key);
     var dialog = createDialog(key, loaded);
@@ -171,15 +172,15 @@ function resizeDialog(dialog, loaded){
 }
 
 function positionExpandButton(expandButton, position){
-  $(expandButton).css({left: position.left - 30, top: position.top - 3})
+  $(expandButton).css({left: position.left - 30, top: position.top - 5})
 }
 
 function positionDialog(dialog, position){
-  $(dialog).css({left: position.left - 52, top: position.top + 26})
+  $(dialog).css({left: position.left - 300, top: position.top + 26})
 }
 
 function positionTriangle(triangle, position){
-  $(triangle).css({left: position.left - 24, top: position.top + 20})
+  $(triangle).css({left: position.left - 28, top: position.top + 20})
 }
 
 function handleExpandButtonClick(event, key){
