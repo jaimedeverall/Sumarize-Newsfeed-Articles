@@ -129,6 +129,29 @@ function positionHighlightsDiv(highlightsDiv, leftMost, top){
   $(highlightsDiv).css({top: top, left: left})
 }
 
+function hexc(colorval) {
+    var parts = colorval.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+    delete(parts[0]);
+    for (var i = 1; i <= 3; ++i) {
+        parts[i] = parseInt(parts[i]).toString(16);
+        if (parts[i].length == 1) parts[i] = '0' + parts[i];
+    }
+    color = parts.join('');
+}
+
+var hexDigits = new Array
+        ("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"); 
+
+//Function to convert rgb color to hex format
+function rgb2hex(rgb) {
+ rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+ return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+}
+
+function hex(x) {
+  return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
+ }
+
 function toggleHighlights(event) { 
   if (event.keyCode == 79) {  //'o' 
     console.log("toggle invoked")
@@ -137,16 +160,30 @@ function toggleHighlights(event) {
     //test
     });
     $('.highlighted_sentence').each(function(i, obj) {
-      console.log("highlighted sentece:", $(obj).attributes)
-      if $(obj).attributes["highlight_color"] == "98FB98" {
-        $(obj).setAttribute() 
+      //console.log("background", $(obj).css('background-color'))
+      ///var rgb = $(obj).css('background-color')
+      //var hexcode = rgb2hex(rgb)
+      //console.log("hexcode", rgb)
+      //var hexcode = hexc(rgb)
+      //console.log("hexcode: ", hexcode)
+      //console.log("hexcode", hexcode)
+      //if (hexcode == "98FB98") {
+      //if (hexcode == "#98fb98") {
+      //if (rgb != null) {
+      if (highlights_on) {
+        $(obj).css("background-color", "transparent")
+        //$(obj).effect("highlight", { color: "#ffffff" }, 3000);
       } else {
-        $(obj).setAttribute() 
+        $(obj).css("background-color", "#98FB98")
+        //$(obj).effect("highlight", { color: "#98FB98" }, 3000);
       }
+      highlights_on = !highlights_on
     //test
     });
   }
 }
 
 console.log("updated version") 
+console.log("hwere are you")
+highlights_on = true
 document.onkeydown = toggleHighlights
