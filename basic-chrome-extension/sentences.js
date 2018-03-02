@@ -1,6 +1,8 @@
 console.log('reloading sentences');
 const sentencesServerResponse = 'gistsentences_response' + document.URL;
 
+setupSentences(document.URL);
+
 function setupSentences(){
   saveTopSentences(document.URL);
 }
@@ -11,8 +13,8 @@ function saveTopSentences(url){
   if(topSentences === null){
     var details = {article_url: url}
     chrome.runtime.sendMessage({endpoint: 'top_sentences', request_type: 'GET', parameters: details}, function(response) {
-      console.log(response);
       var topSentences = JSON.parse(response);
+      console.log('sentences response', topSentences);
       if(Object.keys(topSentences).length > 0){
         window.sessionStorage.setItem(sentencesServerResponse, JSON.stringify(topSentences));
         highlightTopSentences(topSentences);

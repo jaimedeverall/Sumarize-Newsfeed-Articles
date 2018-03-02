@@ -5,7 +5,9 @@ var leftBound = 0
 var topBound = 0 
 var height = 150 
 var width = 150
-var last_highlight = "" 
+var last_highlight = ""
+
+setupUserHighlights();
 
 function setupUserHighlights(){
   document.onkeyup = popup_text; 

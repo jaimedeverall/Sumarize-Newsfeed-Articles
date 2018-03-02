@@ -5,23 +5,17 @@ const spacing = 8;
 const elementIdentifier = 'gisthighlights'
 const highlightsServerResponseKey = 'gisthighlights_response' + document.URL
 
-isNewsUrl(document.URL);
+setupHighlights(document.URL);
 
-//Gets called once on each page reload. This function takes care of loading highlights, sentences and user highlights.
-function isNewsUrl(url){
+//Gets called once on each page reload.
+function setupHighlights(url){
   var details = {article_url: url}
   chrome.runtime.sendMessage({endpoint: 'is_news_article', request_type: 'GET', parameters: details}, function(response) {
     var is_news = JSON.parse(response)['is_news'];
     if(is_news === true){
-      setupUserHighlights();
-      setupSentences();
-      setupHighlights();
+      saveHighlights(url);
     }
   });
-}
-
-function setupHighlights(){
-  saveHighlights(document.URL);
 }
 
 //Gets called once on each page reload if the url is a news article. Gets called by isNewsUrl.
@@ -31,6 +25,7 @@ function saveHighlights(url){
     var details = {article_url: url}
     chrome.runtime.sendMessage({endpoint: 'highlights', request_type: 'GET', parameters: details}, function(response) {
       var res = JSON.parse(response);
+      console.log('highlights response', res);
       var highlights = res.highlights;
       if(highlights !== undefined && Object.keys(highlights).length > 0){
         window.sessionStorage.setItem(highlightsServerResponseKey, JSON.stringify(highlights));
@@ -49,6 +44,8 @@ function process(highlights){
   if(domElementsAndScores.length === 0){
     return;//stop before we set the interval if there are no matched domElements.
   }
+
+  console.log('domElementsAndScores', domElementsAndScores);
 
   normalizeScores(domElementsAndScores);
 
