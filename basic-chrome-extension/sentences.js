@@ -1,7 +1,9 @@
 console.log('reloading sentences');
-const sentencesServerResponse = 'gistsentences_response';
+const sentencesServerResponse = 'gistsentences_response' + document.URL;
 
-saveTopSentences(document.URL);
+function setupSentences(){
+  saveTopSentences(document.URL);
+}
 
 //Gets called once on each page reload.
 function saveTopSentences(url){
@@ -35,7 +37,7 @@ function highlightTopSentences(topSentences){
       var domElement = $(selector).get(-1); //gets the last matched element i.e. the element closest to the text.
       if(domElement !== undefined){
         const oldInnerHTML = domElement.innerHTML;
-        const regexString = sentence.replace(new RegExp('[^a-zA-Z0-9]', 'g'), '.+?');
+        const regexString = sentence.replace(new RegExp('[^a-zA-Z0-9]', 'g'), '.*?');
         var re = new RegExp(regexString);
         const newInnerHTML = oldInnerHTML.replace(re, replacer);
         domElement.innerHTML = newInnerHTML;

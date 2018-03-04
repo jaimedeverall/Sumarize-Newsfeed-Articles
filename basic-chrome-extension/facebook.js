@@ -74,6 +74,7 @@ function elementClicked(x, y, element){
   return x >= elementLeft && x <= elementRight && y >= elementTop && y <= elementBottom;
 }
 
+//This function is not used.
 function findNewsLink(){
   $("a[aria-label='Story options']").each(function(index, element){
     if(isElementInViewport(element)){
@@ -90,7 +91,7 @@ function findNewsLink(){
   })
 }
 
-//This function will return the news url if it is a story otherwise it will return null
+//This function is not used.
 function getNewsUrl(storyOptionsElement){
   var overall = $(storyOptionsElement).parent().parent().parent().get(0);
   if(overall === undefined){
@@ -127,6 +128,7 @@ function saveDetails(key, url){
     }
 
     responseObj = JSON.parse(response);
+
     obj.loaded = true;
     obj.author_reputability = responseObj.author_reputability;
     obj.time_to_read = responseObj.time_to_read;
@@ -139,52 +141,67 @@ function saveDetails(key, url){
 function addButtonsAndDialogs() {
   $(".summary_dialog").remove()
   $(".expand_button").remove()
-  $("a[aria-label='Story options']").each(function(index, element){
-    const url = getNewsUrl(element);
+  //div[data-testid='fbfeed_story']
+  $("div[role='article']").each(function(index, element){
+    const storyOptions = $(element).find("a[aria-label='Story options']").get(0);
 
-    if(url === null){
+    if(storyOptions === undefined){
       return;
     }
 
-    if(isElementInViewport(element)){
-      const key = identifier + url;
-      var existingObj = JSON.parse(window.sessionStorage.getItem(key));
-
-      var visibility = 'hidden';
-      var loaded = false;
-
-      if(existingObj === null){
-        var newObj = {visibility: 'hidden', loaded: false};
-        window.sessionStorage.setItem(key, JSON.stringify(newObj));
-        saveDetails(key, url);
-      }else{
-        visibility = existingObj.visibility;
-        loaded = existingObj.loaded;
-      }
-
-      var position = $(element).offset();
-    
-      var expandButton = createExpandButton(key);
-      var dialog = createDialog(key, loaded);
-      var triangle = createTriangle(key);
-
-      expandButton.onclick = function(e){
-        handleExpandButtonClick(e, key);
-      }
-
-      $(dialog).css({visibility: visibility});
-      $(triangle).css({visibility: visibility});
-
-      document.body.appendChild(expandButton);
-      document.body.appendChild(dialog);
-      document.body.appendChild(triangle);
-
-      resizeDialog(dialog, loaded);
-  
-      positionExpandButton(expandButton, position);
-      positionDialog(dialog, position);
-      positionTriangle(triangle, position);
+    if(!isElementInViewport(storyOptions)){
+      return;
     }
+
+    const a = $(element).find("a[class='_52c6']").get(0);
+
+    if(a === undefined || storyOptions === undefined){
+      return;
+    }
+
+    const url = a.getAttribute('href');
+
+    if(url === undefined || url === null){
+      return;
+    }
+
+    const key = identifier + url;
+    var existingObj = JSON.parse(window.sessionStorage.getItem(key));
+
+    var visibility = 'hidden';
+    var loaded = false;
+
+    if(existingObj === null){
+      var newObj = {visibility: 'hidden', loaded: false};
+      window.sessionStorage.setItem(key, JSON.stringify(newObj));
+      saveDetails(key, url);
+    }else{
+      visibility = existingObj.visibility;
+      loaded = existingObj.loaded;
+    }
+
+    var position = $(storyOptions).offset();
+    
+    var expandButton = createExpandButton(key);
+    var dialog = createDialog(key, loaded);
+    var triangle = createTriangle(key);
+
+    expandButton.onclick = function(e){
+      handleExpandButtonClick(e, key);
+    }
+
+    $(dialog).css({visibility: visibility});
+    $(triangle).css({visibility: visibility});
+
+    document.body.appendChild(expandButton);
+    document.body.appendChild(dialog);
+    document.body.appendChild(triangle);
+
+    resizeDialog(dialog, loaded);
+  
+    positionExpandButton(expandButton, position);
+    positionDialog(dialog, position);
+    positionTriangle(triangle, position);
   })
 }
 
