@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+	"github.com/rs/cors"
 )
 
 type Metadata struct{
@@ -13,6 +16,16 @@ type Metadata struct{
 	info1 string 
 	info2 string
 }
+
+type Highlight struct {
+	ID        bson.ObjectId `bson:"_id,omitempty"`
+	News_url string 
+	Highlight_line string
+	User_id string
+	Time string
+}
+
+var user_collection *mgo.Collection 
 
 // formatRequest generates ascii representation of a request (for debugging purposes)
 func formatRequest(r *http.Request) string {
@@ -77,6 +90,8 @@ func highlightsHandler(w http.ResponseWriter, r *http.Request) {
 		user_id := r.FormValue("user_id")
 		highlight := r.FormValue("highlight")
 
+
+
 		if (len(user_id) == 0) { http.Error(w, "Please pass in a user_id", http.StatusBadRequest) }
 		insertNewHighlights(article_url, user_id, highlight)
 	} else {
@@ -139,13 +154,41 @@ func isNewsArticleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func getNewsArticles(w http.ResponseWriter, r *http.Request) { 
+	user_id := r.FormValue("user_id")
+	if (len(user_id) == 0) { 
+		http.Error(w, "Please pass in the author", http.StatusBadRequest)
+	} else {
+		w.Header().Set("Content-Type", "application/json") 
+		request_body := retrieveNewsArticles(user_id) 
+		json.NewEncoder(w).Encode(request_body)
+	}
+}
+
 func main() {
-	http.HandleFunc("/summary", summaryHandler)
-	http.HandleFunc("/highlights", highlightsHandler) 
-	http.HandleFunc("/metadata", metadataHandler) 
-	http.HandleFunc("/top_sentences", topSentenceHandler)
-	http.HandleFunc("/is_news_article", isNewsArticleHandler)
-	fmt.Printf("Serving web pages on port 8080...\n")
-	error := http.ListenAndServe(":8080", nil)
+	mux := http.NewServeMux() 
+
+	mux.HandleFunc("/summary", summaryHandler)
+	mux.HandleFunc("/highlights", highlightsHandler) 
+	mux.HandleFunc("/metadata", metadataHandler) 
+	mux.HandleFunc("/top_sentences", topSentenceHandler)
+	mux.HandleFunc("/is_news_article", isNewsArticleHandler)
+	mux.HandleFunc("/get_articles", getNewsArticles)
+	mux.Handle("/", http.FileServer(http.Dir("../highlight_webpage")))
+	
+
+	session, err := mgo.Dial("localhost")
+	if (err != nil) { 
+		fmt.Printf("Failed to connect mongodb: " + err.Error() + "\n")
+	} else {
+		fmt.Printf("Successfully connected to mongodb")
+	}
+
+	user_collection = session.DB("user_info").C("highlights")
+	fmt.Printf("Serving web pages on port 80...\n")
+
+	handler := cors.Default().Handler(mux)
+
+	error := http.ListenAndServe(":8080", handler)
 	fmt.Println(error) 
 }

@@ -9,7 +9,8 @@
       if (error) {
         $('.error').text(error)
       }
-      values.forEach(function(value) {
+      console.log(values["reading_items"])
+      values["reading_items"].forEach(function(value) {
         NewsfeedView.renderPost($newsfeed, value, false) 
       })
       $newsfeed.imagesLoaded(function() {

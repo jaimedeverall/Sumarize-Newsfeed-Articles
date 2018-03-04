@@ -3,6 +3,7 @@ package main
 import "encoding/json"
 import "os/exec"
 import "fmt"
+import "time"
 
 func retrieveHighlights(article_url string) map[string]interface{}{ 
 	// find highlights. 
@@ -31,6 +32,13 @@ func retrieveTopSentences(article_url string) map[string]interface{} {
 }
 
 func insertNewHighlights(article_url string, user_id string, highlighted_string string) {
-	fmt.Println("highlight string: " + highlighted_string + "\n")
-	// 
+	fmt.Println("article_url", article_url)
+	fmt.Println("user_id", user_id)
+	err := user_collection.Insert(&Highlight{News_url: article_url, 
+		Highlight_line: highlighted_string, User_id: user_id, Time: time.Now().String()})
+	if (err != nil) { 
+		fmt.Println("Failed to insert string\n")
+	} else {
+		fmt.Println("highlight string: " + highlighted_string + "successfully inserted. \n")
+	}
 }
