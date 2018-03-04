@@ -3,4 +3,5 @@
   background-color: green;
   position: absolute;
   border-radius: 5px;
+  z-index: 2;
 }

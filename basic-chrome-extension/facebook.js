@@ -152,8 +152,8 @@ function addButtonsAndDialogs() {
     if(!isElementInViewport(storyOptions)){
       return;
     }
-
-    const a = $(element).find("a[class='_52c6']").get(0);
+    
+    const a = findLinkElement(element);
 
     if(a === undefined || storyOptions === undefined){
       return;
@@ -203,6 +203,18 @@ function addButtonsAndDialogs() {
     positionDialog(dialog, position);
     positionTriangle(triangle, position);
   })
+}
+
+function findLinkElement(element){
+  var a = $(element).find("a[class='_52c6']").get(0);
+  if(a !== undefined){
+    return a
+  }
+  a = $(element).find("a[class='_275_']").get(0);
+  if(a !== undefined){
+    return a
+  }
+  return a
 }
 
 function resizeDialog(dialog, loaded){
