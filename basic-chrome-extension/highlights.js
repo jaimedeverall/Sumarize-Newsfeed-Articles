@@ -21,11 +21,17 @@ function isNewsUrl(url){
 }
 
 function setupHighlights(){
+  console.log("setting up highlights")
   saveHighlights(document.URL);
 }
 
 //Gets called once on each page reload if the url is a news article. Gets called by isNewsUrl.
 function saveHighlights(url){
+  console.log("saving highlights")
+  if (highlights_on == false) {
+    console.log("off")
+    return
+  }
   const highlights = JSON.parse(window.sessionStorage.getItem(highlightsServerResponseKey));
   if(highlights === null){
     var details = {article_url: url}
@@ -44,6 +50,9 @@ function saveHighlights(url){
 
 //Called once on each page reload if the url is a news article. Gets called by saveHighlights.
 function process(highlights){
+  if (highlights_on == false) { 
+    return
+  }
   domElementsAndScores = tagElements(highlights);
 
   if(domElementsAndScores.length === 0){
@@ -95,6 +104,9 @@ function tagElements(highlights){
 
 //This function gets called every time the DOM changes.
 function addHighlightDivs(domElementsAndScores){
+  if (highlights_on == false) { 
+    return
+  }
   $('.highlights_div').remove();
   //eventually see if you can move this code to cache.
   var leftMostPosition = null
