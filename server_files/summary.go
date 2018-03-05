@@ -23,10 +23,9 @@ func retrieveSummary(article_url string) map[string]interface{} {
 	raw_summary := raw["summary"].([]interface{})
 	s := make([]string, len(raw_summary))
 	for i, v := range raw_summary {
-    	s[i] = fmt.Sprint(v)
+    s[i] = fmt.Sprint(v)
 	}
 	newArticle.summary = s//raw["summary"].([]string)
-
 	newArticle.text = raw["text"].(string)
 	fmt.Println("new article text: " + newArticle.text)
 	//newArticle.authors = raw["authors"].(string)

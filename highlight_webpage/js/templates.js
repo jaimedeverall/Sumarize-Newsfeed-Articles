@@ -14,6 +14,7 @@
    */
   Templates.renderPost = function(post) {
     var content;
+    /*
     switch (post.api) {
       case 'flickr':
         content = tag('img', {
@@ -43,11 +44,16 @@
 
       default:
         throw new Exception('Invalid API: ' + post.api);
-    }
+    }*/ 
+    console.log("update")
+    var post_results = post.split(';')
+    console.log(post_results)
 
     return tag('div', {class: 'post'}, [
       tag('div', {class: 'meta'}, [
-        tag('h2', {}, post.title),
+        tag('h2', {}, post_results[0]),
+        tag('p', {}, post_results[1]), 
+        tag('p', {}, post_results[2]), 
 
         tag('div', {class: 'actions'}, [
           tag('a', {

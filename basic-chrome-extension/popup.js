@@ -103,6 +103,7 @@ function saveBackgroundColor(url, color) {
 // to a document's origin. Also, using chrome.storage.sync instead of
 // chrome.storage.local allows the extension data to be synced across multiple
 // user devices.
+/*
 document.addEventListener('DOMContentLoaded', () => {
   getCurrentTabUrl((url) => {
     var dropdown = document.getElementById('dropdown');
@@ -123,4 +124,4 @@ document.addEventListener('DOMContentLoaded', () => {
       saveBackgroundColor(url, dropdown.value);
     });
   });
-});
+});*/

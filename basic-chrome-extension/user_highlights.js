@@ -94,7 +94,7 @@ function highlightClicked() {
   var location = document.location.href
   console.log(location)
 
-  var details = {"source": "publisher_site", "article_url": location, "highlight": last_highlight}
+  var details = {"source": "publisher_site", "article_url": location, "highlight": last_highlight, "user_id": "mchang"}
 
   chrome.runtime.sendMessage({endpoint: "highlights", request_type: "POST", parameters: details}, function(response) {
     console.log("response received")
