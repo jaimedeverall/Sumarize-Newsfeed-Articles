@@ -2,7 +2,7 @@
 (function() {
   var PostModel = {};
 
-  var POSTS_URL= '/posts';
+  var POSTS_URL= 'http://localhost:8080/get_articles';
   var STATUS_OK = 200
 
   /**
@@ -23,8 +23,8 @@
         callback(postRequest.responseText)
       }
     })
-
-    postRequest.open('GET', POSTS_URL)
+    console.log("loading the function")
+    postRequest.open('GET', POSTS_URL + '?user_id=' +  'mchang')
     postRequest.send()
   };
 
