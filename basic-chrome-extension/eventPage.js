@@ -17,7 +17,8 @@ function parseRequest(request)  {
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse){
     var parameter_string = parseRequest(request.parameters)
-    var requestUrl = "http://localhost:8080/" + request.endpoint + "?" + parameter_string
+    //var requestUrl = "http://localhost:8080/" + request.endpoint + "?" + parameter_string
+    var requestUrl = "http://35.230.103.160:80/" + request.endpoint + "?" + parameter_string
 
     var xhr = new XMLHttpRequest();
     xhr.open(request.request_type, requestUrl, true);
