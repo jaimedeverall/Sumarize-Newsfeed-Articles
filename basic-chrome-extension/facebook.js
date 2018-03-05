@@ -126,7 +126,7 @@ function saveDetails(key, url){
     if(obj === null){
       return;
     }
-
+    console.log("response string" + response)
     responseObj = JSON.parse(response);
 
     obj.loaded = true;
@@ -283,7 +283,7 @@ function createDialog(key, loaded){
 
   var summaryDiv = document.createElement('div');
   summaryDiv.setAttribute('class', 'summary_text');
-  var res = recap.split(".")
+  //var res = recap.split(".")
   var list = document.createElement('ul') 
   $(list).css("list-style-type", "disc")
   $(list).css("list-style-position", "inside")
@@ -294,13 +294,13 @@ function createDialog(key, loaded){
   //list.setAttribute("padding-left", "10px")
   $(list).css('padding-left', '10px')
 
-  for (var i = 0; i < res.length; i++) { 
-    if (res[i].length == 0) {
+  for (var i = 0; i < recap.length; i++) { 
+    if (recap[i].length == 0) {
       continue
     }
     var element = document.createElement('li')
     //element.setAttribute('padding-left', '10px')
-    element.innerHTML = res[i] + "<br/><br/>"
+    element.innerHTML = recap[i] + "<br/><br/>"
     list.appendChild(element)
   }
 

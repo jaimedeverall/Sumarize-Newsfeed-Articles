@@ -359,8 +359,8 @@ class Article(object):
         max_sents = self.config.MAX_SUMMARY_SENT
 
         summary_sents = nlp.summarize(title=self.title, text=self.text, max_sents=max_sents)
-        summary = '\n'.join(summary_sents)
-        self.set_summary(summary)
+        #summary = '\n'.join(summary_sents)
+        self.set_summary(summary_sents)
 
         highlights = nlp.highlights(title=self.title, text=self.text, max_sents=max_sents)
         self.highlights = highlights

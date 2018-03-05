@@ -3,7 +3,7 @@ package main
 type Article struct {
 	title string
 	text string
-	summary string
+	summary []string
 	authors string 
 	publish_date string
 	time_to_read float64
