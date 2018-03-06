@@ -126,7 +126,6 @@ function saveDetails(key, url){
     if(obj === null){
       return;
     }
-    console.log("response string" + response)
     responseObj = JSON.parse(response);
 
     obj.loaded = true;
@@ -278,7 +277,7 @@ function createDialog(key, loaded){
   var metricsDiv = document.createElement('div')
   metricsDiv.setAttribute('class', 'metrics_text');
   var metricsParagraph = document.createElement('p');
-  metricsParagraph.innerHTML = "<span class='metrics_title'>Author Reputability: </span>" + author_reputability + "<br/> <span class='metrics_title'>Time To Read: </span>" + time_to_read + "<br/>";
+  metricsParagraph.innerHTML = "<span class='metrics_title'>Time To Read: </span>" + time_to_read + "<br/>";
   metricsDiv.appendChild(metricsParagraph);
 
   var summaryDiv = document.createElement('div');
@@ -293,6 +292,7 @@ function createDialog(key, loaded){
   //dialog.setAttribute("padding-left", "10px")
   //list.setAttribute("padding-left", "10px")
   $(list).css('padding-left', '10px')
+  console.log("recap: " + recap)
 
   for (var i = 0; i < recap.length; i++) { 
     if (recap[i].length == 0) {

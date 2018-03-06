@@ -18,6 +18,18 @@ function parseRequest(request)  {
 // requires end point + parameters
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse){
+    if(request.get_open_tab_url === true){
+      chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function(tabs){
+        var openTab = tabs[0]
+        if(openTab.id === sender.tab.id){
+          sendResponse(JSON.stringify({is_tab_open: true, url: openTab.url}));
+        }else{
+          sendResponse(JSON.stringify({is_tab_open: false}))
+        }
+      });
+      return true;
+    }
+
     chrome.storage.sync.get("username", (user_name) => {
       var user_name = chrome.runtime.lastError ? null : user_name[user_name]
       if (user_name == null) { 
@@ -39,3 +51,20 @@ chrome.runtime.onMessage.addListener(
     return true; 
   }
 );
+
+// const gist_sentences_identifier = 'gistsentences'
+
+// var tabToUrl = {};
+// chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+//     // Note: this event is fired twice:
+//     // Once with `changeInfo.status` = "loading" and another time with "complete"
+//     tabToUrl[tabId] = tab.url;
+// });
+
+// chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
+//     const url = tabToUrl[tabId];
+//     const key = gist_sentences_identifier + '_' + url;
+//     chrome.storage.sync.remove(key);
+//     // Remove information for non-existent tab
+//     delete tabToUrl[tabId];
+// });
