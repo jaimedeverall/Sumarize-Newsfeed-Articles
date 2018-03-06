@@ -157,16 +157,16 @@ function addButtonsAndDialogs() {
       return;
     }
     
-    const a = findLinkElement(element);
-    a.onclick = function(e) { 
-      sendLoggingRequest(url, "click_through")
-    }
+    var a = findLinkElement(element);
+
+
 
     if(a === undefined || storyOptions === undefined){
       return;
     }
 
     const url = a.getAttribute('href');
+    $(a).click = sendLoggingRequest(url, "click_through")
 
     if(url === undefined || url === null){
       return;

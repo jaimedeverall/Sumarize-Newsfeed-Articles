@@ -11,7 +11,7 @@ function isNewsUrl(url){
     if (!is_news) { 
       $('.highlights_div').each(function(i, obj) {
         $(obj).hide();
-      }
+      });
     }
   });
 }
@@ -68,7 +68,7 @@ function highlightTopSentences(topSentences){
 
 function toggleHighlights(event) { 
   if (event.keyCode == 79) {  //'o' 
-    $('.highlights_div').each(function(i, obj) {
+    $('.highlighted_sentence').each(function(i, obj) {
       $(obj).toggle(); 
     //test
     });

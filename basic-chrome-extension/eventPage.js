@@ -36,8 +36,8 @@ chrome.runtime.onMessage.addListener(
         user_name = ""
       }
       var parameter_string = parseRequest(request.parameters) + "&user_id=" + user_name
-    //var requestUrl = "http://localhost:8080/" + request.endpoint + "?" + parameter_string
-      var requestUrl = "http://35.230.64.141:80/" + request.endpoint + "?" + parameter_string
+      var requestUrl = "http://localhost:8080/" + request.endpoint + "?" + parameter_string
+      //var requestUrl = "http://35.230.64.141:80/" + request.endpoint + "?" + parameter_string
 
       var xhr = new XMLHttpRequest();
       xhr.open(request.request_type, requestUrl, true);
