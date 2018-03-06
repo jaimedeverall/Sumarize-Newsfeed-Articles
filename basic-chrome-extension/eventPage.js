@@ -1,3 +1,5 @@
+
+
 function parseRequest(request)  { 
   var parseStr = "";
   for (var key in request) {
@@ -28,19 +30,24 @@ chrome.runtime.onMessage.addListener(
       return true;
     }
 
-    var parameter_string = parseRequest(request.parameters)
-    //var requestUrl = "http://localhost:8080/" + request.endpoint + "?" + parameter_string
-    var requestUrl = "http://localhost:8080/" + request.endpoint + "?" + parameter_string
-    //http://35.230.103.160:80/
-    var xhr = new XMLHttpRequest();
-    xhr.open(request.request_type, requestUrl, true);
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == 4) {
-        sendResponse(xhr.response);
+    chrome.storage.sync.get("username", (user_name) => {
+      var user_name = chrome.runtime.lastError ? null : user_name[user_name]
+      if (user_name == null) { 
+        user_name = ""
       }
-    }
-    xhr.send();
-    return true
+      var parameter_string = parseRequest(request.parameters) + "&user_id=" + user_name
+    //var requestUrl = "http://localhost:8080/" + request.endpoint + "?" + parameter_string
+      var requestUrl = "http://35.230.103.160:80/" + request.endpoint + "?" + parameter_string
+
+      var xhr = new XMLHttpRequest();
+      xhr.open(request.request_type, requestUrl, true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+          sendResponse(xhr.response);
+        }
+      }
+      xhr.send();
+    });
   }
 );
 

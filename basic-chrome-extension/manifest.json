@@ -4,9 +4,9 @@
   "description": "This extension allows you to consume news efficiently.",
   "version": "1.0",
   "browser_action": {
-    "default_icon": "icon.png",
+    "default_icon": "gist_logo.png",
     "default_popup": "popup.html",
-    "default_title": "Click here!"
+    "default_title": "Gist!"
   },
   "permissions": [
     "tabs", 
@@ -29,6 +29,7 @@
       "run_at": "document_end",
       "all_frames": true
     },
+    
     {
       "matches": ["https://*/*", "http://*/*"],
       "css": ["sentences.css"],

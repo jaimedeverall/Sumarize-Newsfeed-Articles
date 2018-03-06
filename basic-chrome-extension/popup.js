@@ -95,6 +95,69 @@ function saveBackgroundColor(url, color) {
   chrome.storage.sync.set(items);
 }
 
+/*
+
+<form method="POST">
+     <div id="dynamicInput">
+          Entry 1<br><input type="text" name="myInputs[]">
+     </div>
+     <input type="button" value="Add another text input" onClick="addInput('dynamicInput');">
+</form>
+
+     else {
+          var newdiv = document.createElement('div');
+          newdiv.innerHTML = "Entry " + (counter + 1) + " <br><input type='text' name='myInputs[]'>";
+          document.getElementById(divName).appendChild(newdiv);
+          counter++;
+     }
+*/
+
+function saveUsername() { 
+  console.log('saving username')
+  var user_name = document.getElementsByName("name_input")[0].value
+  chrome.storage.sync.set({ "username":  user_name}, function(){
+  });
+}
+
+function load_javascript() { 
+  chrome.storage.sync.get("username", (user_name) => {
+    var username = chrome.runtime.lastError ? null : user_name["username"]
+    if (username != null) { 
+      var element = document.getElementsByName("name_input")[0] 
+      element.value = username
+    }
+  });
+}
+
+var button = document.getElementsByName("save_button")[0]
+button.addEventListener('click', saveUsername);
+
+
+// Check whether new version is installed
+/*
+chrome.runtime.onInstalled.addListener(function(details){
+    if(details.reason == "install"){
+      var form = document.createElement('form')
+      var input = document.createElement('div')
+      var button = document.createElement('type')
+      $(form).css('method','POST');
+      $(input).css('input type', 'text')
+      $(button).css('type', 'button') 
+
+      form.appendChild(input)
+      document.body.add(form)
+      document.body.add(button)
+      console.log("This is a first install!");
+    }else if(details.reason == "update"){
+        var thisVersion = chrome.runtime.getManifest().version;
+        console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
+    }else {
+
+    }
+});*/
+
+load_javascript()
+
 // This extension loads the saved background color for the current tab if one
 // exists. The user can select a new background color from the dropdown for the
 // current page, and it will be saved as part of the extension's isolated
