@@ -25,7 +25,16 @@ type Highlight struct {
 	Time string
 }
 
+type Log struct {
+	ID        bson.ObjectId `bson:"_id,omitempty"`
+	News_url string 
+	Log_type string
+	User_id string
+}
+
+
 var user_collection *mgo.Collection 
+var logging_data *mgo.Collection
 
 // formatRequest generates ascii representation of a request (for debugging purposes)
 func formatRequest(r *http.Request) string {
@@ -59,9 +68,12 @@ func summaryHandler(w http.ResponseWriter, r *http.Request) {
 		article_url := r.FormValue("article_url")
 
 		if (strings.Compare(r.FormValue("source"), "facebook") == 0) {
-			if (strings.Compare(article_url[:len("https://l.facebook.com/l.php?u=")], "https://l.facebook.com/l.php?u=") == 0) { 
-				article_url = article_url[len("https://l.facebook.com/l.php?u="):]
+			if (len(article_url) > len("https://l.facebook.com/l.php?u=")) { 
+				if (strings.Compare(article_url[:len("https://l.facebook.com/l.php?u=")], "https://l.facebook.com/l.php?u=") == 0) { 
+					article_url = article_url[len("https://l.facebook.com/l.php?u="):]
+				}
 			}
+			
 		}
 		fmt.Printf(article_url)
 		if (len(article_url) == 0) {
@@ -167,6 +179,17 @@ func getNewsArticles(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func processLog(w http.ResponseWriter, r *http.Request) { 
+	user_id := r.FormValue("user_id")
+	url := r.FormValue("url") 
+	log_type := r.FormValue("type")
+	fmt.Println("user_id: " + user_id)
+	fmt.Println("url: " + url)
+	fmt.Println("log_type" + log_type)
+
+	insertLog(user_id, url, log_type)
+}
+
 func main() {
 	mux := http.NewServeMux() 
 
@@ -176,6 +199,7 @@ func main() {
 	mux.HandleFunc("/top_sentences", topSentenceHandler)
 	mux.HandleFunc("/is_news_article", isNewsArticleHandler)
 	mux.HandleFunc("/get_articles", getNewsArticles)
+	mux.HandleFunc("/logging", processLog)
 	mux.Handle("/", http.FileServer(http.Dir("../highlight_webpage")))
 	
 
@@ -187,10 +211,11 @@ func main() {
 	}
 
 	user_collection = session.DB("user_info").C("highlights")
+	logging_data = session.DB("user_info").C("data_logs")
 	fmt.Printf("Serving web pages on port 80...\n")
 
 	handler := cors.Default().Handler(mux)
 
-	error := http.ListenAndServe(":8080", handler)
+	error := http.ListenAndServe(":80", handler)
 	fmt.Println(error) 
 }
