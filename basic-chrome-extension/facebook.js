@@ -166,7 +166,11 @@ function addButtonsAndDialogs() {
     }
 
     const url = a.getAttribute('href');
-    $(a).click = sendLoggingRequest(url, "click_through")
+
+    var div = linkOnclick(element)
+    div.onclick = function(e) {
+      sendLoggingRequest(url, "click_through") 
+    }
 
     if(url === undefined || url === null){
       return;
@@ -223,6 +227,16 @@ function findLinkElement(element){
     return a
   }
   return a
+}
+
+function linkOnclick(element) {
+  var div = $(element).find("._3x-2").get(0);
+  if (div !== undefined) {
+    console.log("defined")
+  } else {
+    console.log("undefined")
+  }
+  return div
 }
 
 function resizeDialog(dialog, loaded){

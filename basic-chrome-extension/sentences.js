@@ -2,15 +2,17 @@ console.log('reloading sentences');
 
 const gist_sentences_identifier = 'gistsentences'
 var is_news = false
+var highlights_on = false
 
 //Gets called once on each page reload. This function takes care of loading highlights, sentences and user highlights.
 function isNewsUrl(url){
   var details = {article_url: url}
   chrome.runtime.sendMessage({endpoint: 'is_news_article', request_type: 'GET', parameters: details}, function(response) {
     is_news = JSON.parse(response)['is_news'];
+    highlights_on = is_news
     if (!is_news) { 
-      $('.highlights_div').each(function(i, obj) {
-        $(obj).hide();
+      $('.highlighted_sentence').each(function(i, obj) {
+        $(obj).css("background-color", "transparent")
       });
     }
   });
@@ -69,11 +71,17 @@ function highlightTopSentences(topSentences){
 function toggleHighlights(event) { 
   if (event.keyCode == 79) {  //'o' 
     $('.highlighted_sentence').each(function(i, obj) {
-      $(obj).toggle(); 
-    //test
+      if (highlights_on) {
+        $(obj).css("background-color", "transparent")
+        //$(obj).effect("highlight", { color: "#ffffff" }, 3000);
+      } else {
+        $(obj).css("background-color", "#98FB98")
+      }      
     });
   }
+  highlights_on = !highlights_on
 }
+
 
 document.onkeydown = toggleHighlights
 

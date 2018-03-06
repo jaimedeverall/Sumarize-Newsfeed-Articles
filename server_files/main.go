@@ -180,6 +180,9 @@ func processLog(w http.ResponseWriter, r *http.Request) {
 	user_id := r.FormValue("user_id")
 	url := r.FormValue("url") 
 	log_type := r.FormValue("type")
+	fmt.Println("user_id: " + user_id)
+	fmt.Println("url: " + url)
+	fmt.Println("log_type" + log_type)
 
 	insertLog(user_id, url, log_type)
 }

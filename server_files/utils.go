@@ -16,7 +16,7 @@ func isNewsArticle(article_url string) map[string]interface{} {
 }
 
 func insertLog(user_id string, url string, log_type string) { 
-	err := user_collection.Insert(&Log{News_url: url, 
+	err := logging_data.Insert(&Log{News_url: url, 
 		Log_type: log_type, User_id: user_id})
 	if (err != nil) { 
 		fmt.Println("Failed to record log\n")
