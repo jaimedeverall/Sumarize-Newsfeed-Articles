@@ -13,6 +13,7 @@ function saveTopSentences(url){
   if(topSentences === null){
     var details = {article_url: url}
     chrome.runtime.sendMessage({endpoint: 'top_sentences', request_type: 'GET', parameters: details}, function(response) {
+      console.log("jsonresponse:", response)
       var topSentences = JSON.parse(response);
       console.log('sentences response', topSentences);
       if(Object.keys(topSentences).length > 0){

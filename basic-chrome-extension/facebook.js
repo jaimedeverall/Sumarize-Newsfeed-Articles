@@ -304,12 +304,6 @@ function createDialog(key, loaded){
     list.appendChild(element)
   }
 
-  //var summaryParagraph = document.createElement('p');
-  //summaryParagraph.innerHTML = recap;
-  //summaryDiv.appendChild(summaryParagraph);
-  //summaryDiv.appendChild(list); 
-  
-
   dialog.appendChild(metricsDiv);
   dialog.appendChild(list)
   //dialog.appendChild(summaryDiv);
