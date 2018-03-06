@@ -31,23 +31,24 @@
     },
     {
       "matches": ["https://*/*", "http://*/*"],
-      "css": ["highlights.css"],
-      "js": ["jquery-3.3.1.min.js", "highlights.js"],
-      "run_at": "document_end",
-      "all_frames": true
-    },
-    {
-      "matches": ["https://*/*", "http://*/*"],
       "css": ["sentences.css"],
       "js": ["jquery-3.3.1.min.js", "sentences.js"],
       "run_at": "document_end",
       "all_frames": true
-    }, 
-    {
-      "matches": ["https://*/*", "http://*/*"],
-      "js":  ["jquery-3.3.1.min.js", "user_highlights.js"], 
-      "css": ["user_highlights.css"]
-    }
+    }//, 
+    // {
+    //   "matches": ["https://*/*", "http://*/*"],
+    //   "css": ["highlights.css"],
+    //   "js": ["jquery-3.3.1.min.js", "highlights.js"],
+    //   "run_at": "document_end",
+    //   "all_frames": true
+    // },
+    
+    // {
+    //   "matches": ["https://*/*", "http://*/*"],
+    //   "js":  ["jquery-3.3.1.min.js", "user_highlights.js"], 
+    //   "css": ["user_highlights.css"]
+    // }
   ],
   "web_accessible_resources": [
     "template.html",

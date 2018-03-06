@@ -1,22 +1,25 @@
 console.log('reloading sentences');
-const sentencesServerResponse = 'gistsentences_response' + document.URL;
 
-setupSentences(document.URL);
+const gist_sentences_identifier = 'gistsentences'
 
-function setupSentences(){
-  saveTopSentences(document.URL);
-}
+chrome.runtime.sendMessage({get_open_tab_url: true}, function(response) {
+  obj = JSON.parse(response);
+  const is_tab_open = obj.is_tab_open;
+  if(is_tab_open === true){
+    saveTopSentences(obj.url);
+  }
+});
 
 //Gets called once on each page reload.
 function saveTopSentences(url){
-  const topSentences = JSON.parse(window.sessionStorage.getItem(sentencesServerResponse));
+  const key = gist_sentences_identifier + '_' + url;
+  const topSentences = JSON.parse(window.sessionStorage.getItem(key));
   if(topSentences === null){
-    var details = {article_url: url}
+    var details = {article_url: url};
     chrome.runtime.sendMessage({endpoint: 'top_sentences', request_type: 'GET', parameters: details}, function(response) {
       var topSentences = JSON.parse(response);
-      console.log('sentences response', topSentences);
       if(Object.keys(topSentences).length > 0){
-        window.sessionStorage.setItem(sentencesServerResponse, JSON.stringify(topSentences));
+        window.sessionStorage.setItem(key, JSON.stringify(topSentences));
         highlightTopSentences(topSentences);
       }
     });
@@ -31,7 +34,6 @@ function replacer(match){
 
 //Could consider also reversing oldInnerHTML and regexString and see which of the matches are shorter.
 function highlightTopSentences(topSentences){
-  console.log('topSentences', topSentences);
   Object.keys(topSentences).forEach(function(sentence){
     var score = topSentences[sentence];
     if(sentence.length > 0){
