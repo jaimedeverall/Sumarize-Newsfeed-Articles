@@ -10,7 +10,7 @@ function isNewsUrl(url){
   chrome.runtime.sendMessage({endpoint: 'is_news_article', request_type: 'GET', parameters: details}, function(response) {
     is_news = JSON.parse(response)['is_news'];
     highlights_on = is_news
-    if (!is_news) { 
+    if (is_news == false) { 
       $('.highlighted_sentence').each(function(i, obj) {
         $(obj).css("background-color", "transparent")
       });
@@ -18,7 +18,7 @@ function isNewsUrl(url){
   });
 }
 
-isNewsUrl(document.location.href);
+
 
 chrome.runtime.sendMessage({get_open_tab_url: true}, function(response) {
   obj = JSON.parse(response);
@@ -82,6 +82,7 @@ function toggleHighlights(event) {
   highlights_on = !highlights_on
 }
 
+isNewsUrl(document.location.href);
 
 document.onkeydown = toggleHighlights
 

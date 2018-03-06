@@ -68,9 +68,12 @@ func summaryHandler(w http.ResponseWriter, r *http.Request) {
 		article_url := r.FormValue("article_url")
 
 		if (strings.Compare(r.FormValue("source"), "facebook") == 0) {
-			if (strings.Compare(article_url[:len("https://l.facebook.com/l.php?u=")], "https://l.facebook.com/l.php?u=") == 0) { 
-				article_url = article_url[len("https://l.facebook.com/l.php?u="):]
+			if (len(article_url) > len("https://l.facebook.com/l.php?u=")) { 
+				if (strings.Compare(article_url[:len("https://l.facebook.com/l.php?u=")], "https://l.facebook.com/l.php?u=") == 0) { 
+					article_url = article_url[len("https://l.facebook.com/l.php?u="):]
+				}
 			}
+			
 		}
 		fmt.Printf(article_url)
 		if (len(article_url) == 0) {
@@ -213,6 +216,6 @@ func main() {
 
 	handler := cors.Default().Handler(mux)
 
-	error := http.ListenAndServe(":8080", handler)
+	error := http.ListenAndServe(":80", handler)
 	fmt.Println(error) 
 }
