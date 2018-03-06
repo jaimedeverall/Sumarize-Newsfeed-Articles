@@ -50,3 +50,22 @@ function highlightTopSentences(topSentences){
     }
   });
 }
+
+function toggleHighlights(event) { 
+  if (event.keyCode == 79) {  //'o' 
+    console.log("toggle invoked")
+    $('.highlights_div').each(function(i, obj) {
+      $(obj).toggle(); 
+    //test
+    });
+    highlights_on = !highlights_on
+  }
+}
+
+console.log("updated version") 
+console.log("hwere are you")
+highlights_on = true
+document.onkeydown = toggleHighlights
+
+
+
