@@ -30,7 +30,7 @@
       -
       - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
     -->
-    <script src="popup.js"></script>
+    
   </head>
 
   <body>
@@ -68,5 +68,14 @@
     <div class="fb-login-button" data-max-rows="1" data-size="large" data-button-type="login_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
 
     <h1>Gist </h1>
+    <form method="POST">
+     <div id="dynamicInput">
+
+          <br><input type="text" name="name_input" placeholder="Enter your name"><br> <br> 
+     </div>
+     <input type="button" value="Save" name="save_button">
+</form>
+<script src="popup.js"></script>
+
   </body>
 </html>
