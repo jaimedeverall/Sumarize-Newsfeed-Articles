@@ -1,6 +1,6 @@
 const identifier = "gistfacebook"
 
-console.log('reloading facebook');
+// all the click throughs, all the expansion clicks
 
 $(".summary_dialog").remove()
 $(".expand_button").remove()
@@ -137,10 +137,15 @@ function saveDetails(key, url){
   });
 }
 
+function sendLoggingRequest(url, type) { 
+  var details = {"url": url, "type": type}
+  chrome.runtime.sendMessage({endpoint: "logging", request_type: "POST", parameters: details}, function(response) {
+  });
+}
+
 function addButtonsAndDialogs() {
   $(".summary_dialog").remove()
   $(".expand_button").remove()
-  //div[data-testid='fbfeed_story']
   $("div[role='article']").each(function(index, element){
     const storyOptions = $(element).find("a[aria-label='Story options']").get(0);
 
@@ -153,6 +158,9 @@ function addButtonsAndDialogs() {
     }
     
     const a = findLinkElement(element);
+    a.onclick = function(e) { 
+      sendLoggingRequest(url, "click_through")
+    }
 
     if(a === undefined || storyOptions === undefined){
       return;
@@ -187,6 +195,7 @@ function addButtonsAndDialogs() {
 
     expandButton.onclick = function(e){
       handleExpandButtonClick(e, key);
+      sendLoggingRequest(url, "expand_button")
     }
 
     $(dialog).css({visibility: visibility});
@@ -286,11 +295,6 @@ function createDialog(key, loaded){
   var list = document.createElement('ul') 
   $(list).css("list-style-type", "disc")
   $(list).css("list-style-position", "inside")
-  //list.setAttribute("list-style-type", "disc")
-  //list.setAttribute('list-style-position', 'inside')
-  //list.setAttribute("margin-left", "100px")
-  //dialog.setAttribute("padding-left", "10px")
-  //list.setAttribute("padding-left", "10px")
   $(list).css('padding-left', '10px')
   console.log("recap: " + recap)
 
@@ -299,14 +303,12 @@ function createDialog(key, loaded){
       continue
     }
     var element = document.createElement('li')
-    //element.setAttribute('padding-left', '10px')
     element.innerHTML = recap[i] + "<br/><br/>"
     list.appendChild(element)
   }
 
   dialog.appendChild(metricsDiv);
   dialog.appendChild(list)
-  //dialog.appendChild(summaryDiv);
   return dialog
 }
 
@@ -328,6 +330,7 @@ function createExpandButton(key){
   expandButton.setAttribute('type', 'image');
   expandButton.setAttribute('src', imageUrl);
   expandButton.setAttribute('class', 'expand_button');
+  //$(expandButton).click(myFunction);
   return expandButton
 }
 

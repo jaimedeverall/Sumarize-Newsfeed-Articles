@@ -1,6 +1,22 @@
 console.log('reloading sentences');
 
 const gist_sentences_identifier = 'gistsentences'
+var is_news = false
+
+//Gets called once on each page reload. This function takes care of loading highlights, sentences and user highlights.
+function isNewsUrl(url){
+  var details = {article_url: url}
+  chrome.runtime.sendMessage({endpoint: 'is_news_article', request_type: 'GET', parameters: details}, function(response) {
+    is_news = JSON.parse(response)['is_news'];
+    if (!is_news) { 
+      $('.highlights_div').each(function(i, obj) {
+        $(obj).hide();
+      }
+    }
+  });
+}
+
+isNewsUrl(document.location.href);
 
 chrome.runtime.sendMessage({get_open_tab_url: true}, function(response) {
   obj = JSON.parse(response);
@@ -17,7 +33,6 @@ function saveTopSentences(url){
   if(topSentences === null){
     var details = {article_url: url};
     chrome.runtime.sendMessage({endpoint: 'top_sentences', request_type: 'GET', parameters: details}, function(response) {
-      console.log("jsonresponse:", response)
       var topSentences = JSON.parse(response);
       if(Object.keys(topSentences).length > 0){
         window.sessionStorage.setItem(key, JSON.stringify(topSentences));
@@ -53,18 +68,13 @@ function highlightTopSentences(topSentences){
 
 function toggleHighlights(event) { 
   if (event.keyCode == 79) {  //'o' 
-    console.log("toggle invoked")
     $('.highlights_div').each(function(i, obj) {
       $(obj).toggle(); 
     //test
     });
-    highlights_on = !highlights_on
   }
 }
 
-console.log("updated version") 
-console.log("hwere are you")
-highlights_on = true
 document.onkeydown = toggleHighlights
 
 
