@@ -34,12 +34,13 @@ Max | Machine Learning, Business/product Strategy | high-level/abstract thinker 
 Jaime| Design thinking, Machine Learning, Frontend Design | Communicative, Inclusive, Open-minded | Rapid prototyping, Maintaining a code-base | Multi-tasking, Cramming
 
 # Weekly Logs: 
-Week 1: https://quip.com/lfBPAKTCJW8b  
-Week 2: https://quip.com/P03GAhX77n3g  
-Week 3: https://quip.com/nnHHAxqeObHb  
-Week 4: https://quip.com/53I9A1KIABBY  
-Week 5: https://quip.com/PYdCAIrpwWaj   
+Week 3: https://quip.com/lfBPAKTCJW8b  
+Week 4: https://quip.com/P03GAhX77n3g  
+Week 5: https://quip.com/nnHHAxqeObHb  
+Week 6: https://quip.com/53I9A1KIABBY  
+Week 7: https://quip.com/PYdCAIrpwWaj   
 Week 8: https://quip.com/YRf7A4DE69aw    
+Week 9: https://quip.com/IEukAqZNtwqj
 
 # Team Communication:
 1. We are communicating internally through Facebook messenger. 
