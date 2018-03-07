@@ -23,8 +23,9 @@ function isNewsUrl(url){
 chrome.runtime.sendMessage({get_open_tab_url: true}, function(response) {
   obj = JSON.parse(response);
   const is_tab_open = obj.is_tab_open;
-  if(is_tab_open === true){
-    saveTopSentences(obj.url);
+  const url = obj.url;
+  if(is_tab_open === true && document.URL === url){
+    saveTopSentences(url);
   }
 });
 
