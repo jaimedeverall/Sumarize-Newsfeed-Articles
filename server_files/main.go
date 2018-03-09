@@ -216,6 +216,6 @@ func main() {
 
 	handler := cors.Default().Handler(mux)
 
-	error := http.ListenAndServe(":80", handler)
+	error := http.ListenAndServe(":8080", handler)
 	fmt.Println(error) 
 }
