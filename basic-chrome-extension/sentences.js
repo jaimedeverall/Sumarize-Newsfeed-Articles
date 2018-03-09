@@ -196,7 +196,7 @@ function is_news_article(url){
         for (var i = 0; i < dash_split.length; i++) { 
           dash_split[i] = dash_split[i].toLowerCase()
         }
-        if (dash_split.includes(tld)) {
+        if (!dash_split.includes(tld)) {
           return true
         }
       }
@@ -206,7 +206,7 @@ function is_news_article(url){
         for (var i = 0; i < underscore_split.length; i++) { 
           underscore_split[i] = underscore_split[i].toLowerCase()
         }
-        if (underscore_split.includes(tld)) {
+        if (!underscore_split.includes(tld)) {
           return true
         }
       }
@@ -296,7 +296,7 @@ function url_to_filetype(abs_url){
     return null;
   }
   //last_chunks = [index, html#blahblah].
-  var last_chunk_arr = last_chunks.pop().split(/#|?/);
+  var last_chunk_arr = last_chunks.pop().split(/\#|\?/);
 
   if(last_chunk_arr.length === 0){
     return null;
