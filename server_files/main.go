@@ -216,6 +216,6 @@ func main() {
 
 	handler := cors.Default().Handler(mux)
 
-	error := http.ListenAndServe(":80", handler)
+	error := http.ListenAndServeTLS(":80", "cert.pem", "key.pem", handler)
 	fmt.Println(error) 
 }
