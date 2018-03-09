@@ -1,3 +1,12 @@
 .highlighted_sentence{
   background-color: #98FB98;
 }
+
+.highlights_button{
+  visibility: visible;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background-color: pink;
+}
