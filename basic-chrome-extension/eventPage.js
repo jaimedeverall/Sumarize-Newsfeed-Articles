@@ -28,6 +28,16 @@ chrome.runtime.onMessage.addListener(
         }
       });
       return true;
+    }else if(request.get_current_tab_url === true){
+      chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function(tabs){
+        for(var i=0; i<tabs.length; i++){
+          if(tabs[i].id === sender.tab.id){
+            sendResponse(JSON.stringify({url: tabs[i].url}));
+          }
+        }
+        sendResponse(JSON.stringify({}));
+      });
+      return true;
     }
 
     chrome.storage.sync.get("username", (user_name) => {
@@ -36,8 +46,8 @@ chrome.runtime.onMessage.addListener(
         user_name = ""
       }
       var parameter_string = parseRequest(request.parameters) + "&user_id=" + user_name
-      //var requestUrl = "http://localhost:8080/" + request.endpoint + "?" + parameter_string
-      var requestUrl = "http://35.230.64.141:80/" + request.endpoint + "?" + parameter_string
+      var requestUrl = "http://localhost:8080/" + request.endpoint + "?" + parameter_string
+      //var requestUrl = "http://35.230.64.141:80/" + request.endpoint + "?" + parameter_string
 
       var xhr = new XMLHttpRequest();
       xhr.open(request.request_type, requestUrl, true);

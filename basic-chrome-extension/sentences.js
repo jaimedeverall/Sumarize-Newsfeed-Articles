@@ -1,8 +1,44 @@
 console.log('reloading sentences');
 
-const gist_sentences_identifier = 'gistsentences'
+const gist_sentences_identifier = 'gistsentences';
+
 var is_news = false
+
 var highlights_on = false
+
+var DATE_REGEX = /([\./\-_]{0,1}(19|20)\d{2})[\./\-_]{0,1}(([0-3]{0,1}[0-9][\./\-_])|(\w{3,5}[\./\-_]))([0-3]{0,1}[0-9][\./\-]{0,1})?/i
+
+var ALLOWED_TYPES = ['html', 'htm', 'md', 'rst', 'aspx', 'jsp', 'rhtml', 'cgi', 'xhtml', 'jhtml', 'asp'];
+
+var GOOD_PATHS = ['story', 'article', 'feature', 'featured', 'slides', 'slideshow', 'gallery', 'news', 'video', 'media', 'v', 'radio', 'press'];
+
+var BAD_CHUNKS = ['careers', 'contact', 'about', 'faq', 'terms', 'privacy', 'advert', 'preferences', 'feedback', 'info', 'browse', 'howto', 'account', 'subscribe', 'donate', 'shop', 'admin'];
+
+var BAD_DOMAINS = ['amazon', 'doubleclick', 'twitter'];
+
+// chrome.runtime.sendMessage({get_open_tab_url: true}, function(response) {
+//   obj = JSON.parse(response);
+//   const is_tab_open = obj.is_tab_open;
+//   const url = obj.url;
+//   if(is_tab_open === true && document.URL === url){
+//     console.log('url', url);
+//     saveTopSentences(url);
+//   }
+// });
+
+//Runs once upon each page reload.
+chrome.runtime.sendMessage({get_current_tab_url: true}, function(response) {
+  obj = JSON.parse(response);
+  const url = obj.url;
+
+  if(url === undefined){
+    return;
+  }
+
+  if(is_news_article(url)){
+    addHighlightsButton(url);
+  }
+});
 
 //Gets called once on each page reload. This function takes care of loading highlights, sentences and user highlights.
 function isNewsUrl(url){
@@ -18,37 +54,73 @@ function isNewsUrl(url){
   });
 }
 
-$(window).bind('scroll resize', function(e) {
+function addHighlightsButton(url){
   $('.highlights_button').remove();
 
   const firstH1 = $(document.body).find('h1').get(0);
-  const firstP = $(document.body).find('p').get(0);
+
+  if(firstH1 === undefined){ //if there is no header we will assume it's not a news article.
+    return;
+  }
 
   const buttonH1 = createButton('h1');
-  const buttonP = createButton('p');
 
-  if(firstH1 !== undefined){
-    document.body.appendChild(buttonH1);
-    const posH1 = $(firstH1).offset();
-    $(buttonH1).css({left: posH1.left, top: posH1.top});
+  buttonH1.style.backgroundColor = 'red';
+
+  buttonH1.onclick = function(e){
+    toggleSentences(buttonH1, url);
   }
 
-  if(firstP !== undefined){
-    document.body.appendChild(buttonP);
-    const posP = $(firstP).offset();
-    $(buttonP).css({left: posP.left, top: posP.top});
+  document.body.appendChild(buttonH1);
+
+  const posH1 = $(firstH1).offset();
+
+  positionHighlightsButton(buttonH1, posH1);
+
+}
+
+function toggleSentences(button, url){
+  const key = gist_sentences_identifier + '_' + url;
+  const topSentences = JSON.parse(window.sessionStorage.getItem(key));
+
+  if(button.style.backgroundColor === 'green'){
+    $('.highlighted_sentence').each(function(index, element){
+      element.style.backgroundColor = 'transparent';
+    })
+    button.style.backgroundColor = 'red';
+    return;
   }
-});
 
-var DATE_REGEX = /([\./\-_]{0,1}(19|20)\d{2})[\./\-_]{0,1}(([0-3]{0,1}[0-9][\./\-_])|(\w{3,5}[\./\-_]))([0-3]{0,1}[0-9][\./\-]{0,1})?/i
+  button.style.backgroundColor = 'green';
 
-var ALLOWED_TYPES = ['html', 'htm', 'md', 'rst', 'aspx', 'jsp', 'rhtml', 'cgi', 'xhtml', 'jhtml', 'asp'];
+  if(topSentences === null){//not in the cache.
+    chrome.runtime.sendMessage({get_current_tab_url: true}, function(response) {
+      const url = JSON.parse(response).url;
+      saveTopSentences(url);
+    });
+  }else{
+    const highlights_inserted = $('.highlighted_sentence').find().get(0);
+    if(highlights_inserted === undefined){//in the cache but not in the DOM.
+      highlightTopSentences(topSentences);
+    }else{//in the cache, already in the DOM.
+      $('.highlighted_sentence').each(function(index, element){
+        element.style.backgroundColor = '#98FB98';
+      })
+    }
+  }
+}
 
-var GOOD_PATHS = ['story', 'article', 'feature', 'featured', 'slides', 'slideshow', 'gallery', 'news', 'video', 'media', 'v', 'radio', 'press'];
+function positionHighlightsButton(button, position){
+  $(button).css({left: position.left, top: position.top});
+}
 
-var BAD_CHUNKS = ['careers', 'contact', 'about', 'faq', 'terms', 'privacy', 'advert', 'preferences', 'feedback', 'info', 'browse', 'howto', 'account', 'subscribe', 'donate', 'shop', 'admin'];
+// $(window).bind('resize', function(e) {
+//   addHighlightsButton(url);
+// });
 
-var BAD_DOMAINS = ['amazon', 'doubleclick', 'twitter'];
+function is_news_article2(url){
+  return true;
+}
 
 function is_news_article(url){
   /*
@@ -320,54 +392,55 @@ function createButton(text){
   return button;
 }
 
-// chrome.runtime.sendMessage({get_open_tab_url: true}, function(response) {
-//   obj = JSON.parse(response);
-//   const is_tab_open = obj.is_tab_open;
-//   const url = obj.url;
-//   if(is_tab_open === true && document.URL === url){
-//     console.log('url', url);
-//     saveTopSentences(url);
-//   }
-// });
-
 //Gets called once on each page reload.
 function saveTopSentences(url){
   const key = gist_sentences_identifier + '_' + url;
-  const topSentences = JSON.parse(window.sessionStorage.getItem(key));
-  if(topSentences === null){
-    var details = {article_url: url};
-    chrome.runtime.sendMessage({endpoint: 'top_sentences', request_type: 'GET', parameters: details}, function(response) {
-      var topSentences = JSON.parse(response);
-      if(Object.keys(topSentences).length > 0){
-        window.sessionStorage.setItem(key, JSON.stringify(topSentences));
-        highlightTopSentences(topSentences);
-      }
-    });
-  }else{
+  var details = {article_url: url};
+  chrome.runtime.sendMessage({endpoint: 'top_sentences', request_type: 'GET', parameters: details}, function(response) {
+    var topSentencesRes = JSON.parse(response);
+    var topSentences = formatResponse(topSentencesRes);
+    if(topSentences.length === 0){
+      return;
+    }
+    window.sessionStorage.setItem(key, JSON.stringify(topSentences));
     highlightTopSentences(topSentences);
-  }
+  });
+}
+
+function formatResponse(topSentencesRes){
+  var topSentences = []
+  Object.keys(topSentencesRes).forEach(function(key){
+    topSentences.push(key);
+  })
+  return topSentences;
 }
 
 function replacer(match){
   return "<span class='highlighted_sentence'>" + match + "</span>";
 }
 
-//Could consider also reversing oldInnerHTML and regexString and see which of the matches are shorter.
 function highlightTopSentences(topSentences){
-  Object.keys(topSentences).forEach(function(sentence){
-    var score = topSentences[sentence];
-    if(sentence.length > 0){
-      const selector = `:contains('${sentence}')`;
-      var domElement = $(selector).get(-1); //gets the last matched element i.e. the element closest to the text.
-      if(domElement !== undefined){
-        const oldInnerHTML = domElement.innerHTML;
-        const regexString = sentence.replace(new RegExp('[^a-zA-Z0-9]', 'g'), '.*?');
-        var re = new RegExp(regexString);
-        const newInnerHTML = oldInnerHTML.replace(re, replacer);
-        domElement.innerHTML = newInnerHTML;
-      }
+  console.log('length', topSentences.length);
+  for(var i=0; i<topSentences.length; i++){
+    const sentence = topSentences[i];
+
+    if(sentence.length === 0){
+      continue;
     }
-  });
+
+    const selector = `:contains('${sentence}')`;
+    var domElement = $(selector).get(-1); //gets the last matched element i.e. the element closest to the text.
+
+    if(domElement === undefined){
+      continue;
+    }
+
+    const oldInnerHTML = domElement.innerHTML;
+    const regexString = sentence.replace(new RegExp('[^a-zA-Z0-9]', 'g'), '.*?');
+    var re = new RegExp(regexString);
+    const newInnerHTML = oldInnerHTML.replace(re, replacer);
+    domElement.innerHTML = newInnerHTML;
+  }
 }
 
 function toggleHighlights(event) { 
@@ -385,6 +458,3 @@ function toggleHighlights(event) {
 }
 
 document.onkeydown = toggleHighlights
-
-
-
