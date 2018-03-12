@@ -1,6 +1,7 @@
 console.log('reloading sentences');
 
 const gist_sentences_identifier = 'gistsentences';
+const gist_sentences_toggle_identifier = 'gistsentences_toggle_on';
 
 var is_news = false
 
@@ -16,16 +17,6 @@ var BAD_CHUNKS = ['careers', 'contact', 'about', 'faq', 'terms', 'privacy', 'adv
 
 var BAD_DOMAINS = ['amazon', 'doubleclick', 'twitter'];
 
-// chrome.runtime.sendMessage({get_open_tab_url: true}, function(response) {
-//   obj = JSON.parse(response);
-//   const is_tab_open = obj.is_tab_open;
-//   const url = obj.url;
-//   if(is_tab_open === true && document.URL === url){
-//     console.log('url', url);
-//     saveTopSentences(url);
-//   }
-// });
-
 //Runs once upon each page reload.
 chrome.runtime.sendMessage({get_current_tab_url: true}, function(response) {
   obj = JSON.parse(response);
@@ -36,7 +27,16 @@ chrome.runtime.sendMessage({get_current_tab_url: true}, function(response) {
   }
 
   if(is_news_article(url)){
-    addHighlightsButton(url);
+    setToggleStatus(false, url); //make sure the toggle is turned of at reload.
+    //over a period of 10 seconds keep moving the highlights button so that it readjusts.
+    var counter = 0;
+    var looper = setInterval(function(){
+      addHighlightsButton(url);
+      counter++;
+      if (counter >= 20){
+        clearInterval(looper);
+      }
+    }, 1000);
   }
 });
 
@@ -63,35 +63,57 @@ function addHighlightsButton(url){
     return;
   }
 
-  const buttonH1 = createButton('h1');
+  const key = gist_sentences_toggle_identifier + '_' + url;
 
-  buttonH1.style.backgroundColor = 'red';
+  const toggleOn = getToggleStatus(url);
 
-  buttonH1.onclick = function(e){
-    toggleSentences(buttonH1, url);
+  const toggle = createToggle(toggleOn);
+
+  toggle.onclick = function(e){
+    toggleSentences(toggle, url);
   }
 
-  document.body.appendChild(buttonH1);
+  document.body.appendChild(toggle);
 
-  const posH1 = $(firstH1).offset();
+  const togglePos = $(firstH1).offset();
 
-  positionHighlightsButton(buttonH1, posH1);
+  positionHighlightsButton(toggle, togglePos);
 
+}
+
+function getToggleStatus(url){
+  const toggleKey = gist_sentences_toggle_identifier + '_' + url;
+  var toggleOn = JSON.parse(window.sessionStorage.getItem(toggleKey));
+  if(toggleOn === null){
+    toggleOn = false;
+  }
+  return toggleOn
+}
+
+function setToggleStatus(newStatus, url){
+  const toggleKey = gist_sentences_toggle_identifier + '_' + url;
+  window.sessionStorage.setItem(toggleKey, JSON.stringify(newStatus));
 }
 
 function toggleSentences(button, url){
   const key = gist_sentences_identifier + '_' + url;
   const topSentences = JSON.parse(window.sessionStorage.getItem(key));
 
-  if(button.style.backgroundColor === 'green'){
+  const toggleOn = getToggleStatus(url);
+
+  if(toggleOn === true){
     $('.highlighted_sentence').each(function(index, element){
       element.style.backgroundColor = 'transparent';
     })
-    button.style.backgroundColor = 'red';
+    const imageUrl = chrome.runtime.getURL('images/off_toggle.png');
+    button.setAttribute('src', imageUrl);
+    setToggleStatus(false, url); //toggleOn = false in sessionStorage.
     return;
   }
 
-  button.style.backgroundColor = 'green';
+  setToggleStatus(true, url); //toggleOn = true in sessionStorage. 
+  const imageUrl = chrome.runtime.getURL('images/on_toggle.png');
+  button.setAttribute('src', imageUrl);
 
   if(topSentences === null){//not in the cache.
     chrome.runtime.sendMessage({get_current_tab_url: true}, function(response) {
@@ -100,9 +122,9 @@ function toggleSentences(button, url){
     });
   }else{
     const highlights_inserted = $('.highlighted_sentence').find().get(0);
-    if(highlights_inserted === undefined){//in the cache but not in the DOM.
+    if(highlights_inserted === undefined){//in the cache but no highlights inserted into the DOM.
       highlightTopSentences(topSentences);
-    }else{//in the cache, already in the DOM.
+    }else{//sentences are in the cache and are already inserted into the DOM.
       $('.highlighted_sentence').each(function(index, element){
         element.style.backgroundColor = '#98FB98';
       })
@@ -111,7 +133,7 @@ function toggleSentences(button, url){
 }
 
 function positionHighlightsButton(button, position){
-  $(button).css({left: position.left, top: position.top});
+  $(button).css({left: position.left, top: position.top - 50});
 }
 
 // $(window).bind('resize', function(e) {
@@ -383,13 +405,19 @@ function url_to_filetype(abs_url){
   return null;
 }
 
-function createButton(text){
-  var button = document.createElement('div');
-  button.style.width = '25px';
-  button.style.height = '25px';
-  button.innerHTML = text;
-  button.setAttribute('class', 'highlights_button');
-  return button;
+function createToggle(toggleOn){
+  var path = 'images/off_toggle.png';
+  if(toggleOn === true){
+    path = 'images/on_toggle.png'
+  }
+  var toggle = document.createElement('input');
+  var imageUrl = chrome.runtime.getURL(path);
+  toggle.style.height = '51px';
+  toggle.style.width = '120px';
+  toggle.setAttribute('type', 'image');
+  toggle.setAttribute('src', imageUrl);
+  toggle.setAttribute('class', 'highlights_button');
+  return toggle;
 }
 
 //Gets called once on each page reload.
