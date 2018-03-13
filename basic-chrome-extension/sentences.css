@@ -4,8 +4,9 @@
 
 .highlights_button{
   visibility: visible;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1000;
+}
+
+.higlights_container{
+  display: flex;
+  flex-direction: column;
 }

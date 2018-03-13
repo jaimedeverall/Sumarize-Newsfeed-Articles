@@ -31,45 +31,20 @@ chrome.runtime.sendMessage({get_open_tab_url: true}, function(response) {
     return;
   }
 
-  if(is_news_article(url)){
+  if(is_news_article(url, false)){
     process(url);
-    setToggleStatus(true, url); //make sure the toggle is turned on at reload by default.
-    //over a period of 10 seconds keep moving the highlights button so that it readjusts.
-    var counter = 0;
-    var looper = setInterval(function(){
-      addHighlightsButton(url);
-      counter++;
-      if (counter >= 20){
-        clearInterval(looper);
-      }
-    }, 1000);
+    setToggleStatus(true, url);
+    addHighlightsButton(url);
   }
 });
 
-//Gets called once on each page reload. This function takes care of loading highlights, sentences and user highlights.
-function isNewsUrl(url){
-  var details = {article_url: url}
-  chrome.runtime.sendMessage({endpoint: 'is_news_article', request_type: 'GET', parameters: details}, function(response) {
-    is_news = JSON.parse(response)['is_news'];
-    highlights_on = is_news
-    if (is_news == false) { 
-      $('.highlighted_sentence').each(function(i, obj) {
-        $(obj).css("background-color", "transparent")
-      });
-    }
-  });
-}
-
+//Called once on each page reload.
 function addHighlightsButton(url){
-  $('.highlights_button').remove();
-
   const firstH1 = $(document.body).find('h1').get(0);
 
   if(firstH1 === undefined){ //if there is no header we will assume it's not a news article.
     return;
   }
-
-  const key = gist_sentences_toggle_identifier + '_' + url;
 
   const toggleOn = getToggleStatus(url);
 
@@ -79,11 +54,22 @@ function addHighlightsButton(url){
     toggleSentences(toggle, url);
   }
 
-  document.body.appendChild(toggle);
+  //document.body.appendChild(toggle);
+  var mainDiv = document.createElement('div');
 
-  const togglePos = $(firstH1).offset();
+  mainDiv.setAttribute('class', 'highlights_container');
 
-  positionHighlightsButton(toggle, togglePos);
+  var divText = document.createElement('div');
+
+  divText.innerHTML = firstH1.innerHTML;
+
+  mainDiv.appendChild(divText);
+
+  mainDiv.appendChild(toggle);
+  
+  firstH1.innerHTML = '';
+
+  firstH1.appendChild(mainDiv);
 }
 
 function getToggleStatus(url){
@@ -108,15 +94,13 @@ function toggleSentences(button, url){
     $('.highlighted_sentence').each(function(index, element){
       element.style.backgroundColor = 'transparent';
     })
-    const imageUrl = chrome.runtime.getURL('images/off_toggle.png');
-    button.setAttribute('src', imageUrl);
+    button.setAttribute('src', chrome.runtime.getURL('images/off_toggle.png'));
     setToggleStatus(false, url); //toggleOn = false in sessionStorage.
     return;
   }
 
   setToggleStatus(true, url); //toggleOn = true in sessionStorage. 
-  const imageUrl = chrome.runtime.getURL('images/on_toggle.png');
-  button.setAttribute('src', imageUrl);
+  button.setAttribute('src', chrome.runtime.getURL('images/on_toggle.png'));
   process(url);
 }
 
@@ -144,15 +128,11 @@ function positionHighlightsButton(button, position){
   $(button).css({left: position.left, top: position.top - 50});
 }
 
-// $(window).bind('resize', function(e) {
-//   addHighlightsButton(url);
-// });
-
 function is_news_article2(url){
   return true;
 }
 
-function is_news_article(url){
+function is_news_article(url, verbose){
   /*
   Is this URL a valid news-article url?
 
@@ -420,8 +400,8 @@ function createToggle(toggleOn){
   }
   var toggle = document.createElement('input');
   var imageUrl = chrome.runtime.getURL(path);
-  toggle.style.height = '51px';
-  toggle.style.width = '120px';
+  toggle.style.height = '43px';
+  toggle.style.width = '100px';
   toggle.setAttribute('type', 'image');
   toggle.setAttribute('src', imageUrl);
   toggle.setAttribute('class', 'highlights_button');
@@ -456,7 +436,6 @@ function replacer(match){
 }
 
 function highlightTopSentences(topSentences){
-  console.log('length', topSentences.length);
   for(var i=0; i<topSentences.length; i++){
     const sentence = topSentences[i];
 
