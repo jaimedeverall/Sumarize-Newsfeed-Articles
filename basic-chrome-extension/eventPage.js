@@ -1,4 +1,14 @@
-
+function getRandomToken() {
+    // E.g. 8 * 32 = 256 bits token
+    var randomPool = new Uint8Array(32);
+    crypto.getRandomValues(randomPool);
+    var hex = '';
+    for (var i = 0; i < randomPool.length; ++i) {
+        hex += randomPool[i].toString(16);
+    }
+    // E.g. db18458e2782b2b77e36769c569e263a53885a9944dd0a861e5064eac16f1a
+    return hex;
+}
 
 function parseRequest(request)  { 
   var parseStr = "";
@@ -41,11 +51,15 @@ chrome.runtime.onMessage.addListener(
     }
 
     chrome.storage.sync.get("username", (user_name) => {
-      var user_name = chrome.runtime.lastError ? null : user_name[user_name]
-      if (user_name == null) { 
-        user_name = ""
+      var username = chrome.runtime.lastError ? null : user_name["username"]
+      if (username == null) { 
+        username = getRandomToken();
+
+        chrome.storage.sync.set({"username":  username}, function() {
+        });
       }
-      var parameter_string = parseRequest(request.parameters) + "&user_id=" + user_name
+
+      var parameter_string = parseRequest(request.parameters) + "&user_id=" + username
       var requestUrl = "http://35.185.247.13:80/" + request.endpoint + "?" + parameter_string
 
       var xhr = new XMLHttpRequest();
