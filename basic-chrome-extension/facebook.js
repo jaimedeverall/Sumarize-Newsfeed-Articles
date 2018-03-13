@@ -159,8 +159,6 @@ function addButtonsAndDialogs() {
     
     var a = findLinkElement(element);
 
-
-
     if(a === undefined || storyOptions === undefined){
       return;
     }

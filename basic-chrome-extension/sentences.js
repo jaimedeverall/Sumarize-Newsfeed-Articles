@@ -18,16 +18,22 @@ var BAD_CHUNKS = ['careers', 'contact', 'about', 'faq', 'terms', 'privacy', 'adv
 var BAD_DOMAINS = ['amazon', 'doubleclick', 'twitter'];
 
 //Runs once upon each page reload.
-chrome.runtime.sendMessage({get_current_tab_url: true}, function(response) {
+chrome.runtime.sendMessage({get_open_tab_url: true}, function(response) {
   obj = JSON.parse(response);
-  const url = obj.url;
 
+  const isTabOpen = obj.is_tab_open;
+  if(isTabOpen === undefined || isTabOpen === false){
+    return;
+  }
+
+  const url = obj.url;
   if(url === undefined){
     return;
   }
 
   if(is_news_article(url)){
-    setToggleStatus(false, url); //make sure the toggle is turned of at reload.
+    process(url);
+    setToggleStatus(true, url); //make sure the toggle is turned on at reload by default.
     //over a period of 10 seconds keep moving the highlights button so that it readjusts.
     var counter = 0;
     var looper = setInterval(function(){
@@ -78,7 +84,6 @@ function addHighlightsButton(url){
   const togglePos = $(firstH1).offset();
 
   positionHighlightsButton(toggle, togglePos);
-
 }
 
 function getToggleStatus(url){
@@ -96,8 +101,6 @@ function setToggleStatus(newStatus, url){
 }
 
 function toggleSentences(button, url){
-  const key = gist_sentences_identifier + '_' + url;
-  const topSentences = JSON.parse(window.sessionStorage.getItem(key));
 
   const toggleOn = getToggleStatus(url);
 
@@ -114,7 +117,12 @@ function toggleSentences(button, url){
   setToggleStatus(true, url); //toggleOn = true in sessionStorage. 
   const imageUrl = chrome.runtime.getURL('images/on_toggle.png');
   button.setAttribute('src', imageUrl);
+  process(url);
+}
 
+function process(url){
+  const key = gist_sentences_identifier + '_' + url;
+  const topSentences = JSON.parse(window.sessionStorage.getItem(key));
   if(topSentences === null){//not in the cache.
     chrome.runtime.sendMessage({get_current_tab_url: true}, function(response) {
       const url = JSON.parse(response).url;
