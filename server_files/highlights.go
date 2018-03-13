@@ -19,7 +19,8 @@ func retrieveHighlights(article_url string) map[string]interface{}{
 	return raw
 }
 
-func retrieveTopSentences(article_url string) map[string]interface{} { 
+func retrieveTopSentences(article_url string, user_id string) map[string]interface{} { 
+	sentences_toggle.Insert(&Sentences{User_id: user_id, Switch: "On", Article_url: article_url})
 	cmd := exec.Command("python3", "top_sentences_script.py", article_url) 
 	summary_bytes, _ := cmd.Output()
 	fmt.Println(string(summary_bytes))

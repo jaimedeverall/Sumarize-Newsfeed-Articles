@@ -52,6 +52,8 @@ function addHighlightsButton(url){
 
   toggle.onclick = function(e){
     toggleSentences(toggle, url);
+    var details = {"article_url": url}
+    chrome.runtime.sendMessage({endpoint: "switch_off", request_type: "GET", parameters: details}, function(){})
   }
 
   //document.body.appendChild(toggle);
