@@ -1,4 +1,4 @@
-const identifier = "gistfacebook"
+const identifier = "gistfacebook";
 
 // all the click throughs, all the expansion clicks
 
@@ -177,8 +177,8 @@ function addButtonsAndDialogs() {
     const key = identifier + url;
     var existingObj = JSON.parse(window.sessionStorage.getItem(key));
 
-    var visibility = 'hidden';
     var loaded = false;
+    var visibility = 'hidden';
 
     if(existingObj === null){
       var newObj = {visibility: 'hidden', loaded: false};
@@ -191,12 +191,12 @@ function addButtonsAndDialogs() {
 
     var position = $(storyOptions).offset();
     
-    var expandButton = createExpandButton(key);
+    var expandButton = createButton(key);
     var dialog = createDialog(key, loaded);
     var triangle = createTriangle(key);
 
     expandButton.onclick = function(e){
-      handleExpandButtonClick(e, key);
+      handleExpandButtonClick(e, key, expandButton);
       sendLoggingRequest(url, "expand_button")
     }
 
@@ -213,6 +213,15 @@ function addButtonsAndDialogs() {
     positionDialog(dialog, position);
     positionTriangle(triangle, position);
   })
+}
+
+function getVisibility(key){
+  var obj = JSON.parse(window.sessionStorage.getItem(key));
+  var visibility = 'hidden';
+  if(obj !== null && obj.visibility !== undefined){
+    visibility = obj.visibility;
+  }
+  return visibility;
 }
 
 function findLinkElement(element){
@@ -259,26 +268,37 @@ function positionTriangle(triangle, position){
   $(triangle).css({left: position.left - 24, top: position.top + 20})
 }
 
-function handleExpandButtonClick(event, key){
+function handleExpandButtonClick(event, key, button){
+  const visibility = getVisibility(key);
+  const newVisibility = toggleVisibility(visibility);
+
+  var obj = JSON.parse(window.sessionStorage.getItem(key));
+  obj.visibility = newVisibility;
+  window.sessionStorage.setItem(key, JSON.stringify(obj));
+
+  button.setAttribute('src', getImageUrl(newVisibility));
+
   $(".summary_dialog").each(function(index, element){
     if(element.id !== undefined && element.id === key){
-      var obj = JSON.parse(window.sessionStorage.getItem(key));
-
-      if(obj === null){
-        return;
-      }
-
-      if(element.style.visibility == "visible"){
-        element.style.visibility = "hidden";
-        obj.visibility = "hidden";
-      }else{
-        element.style.visibility = "visible";
-        obj.visibility = "visible";
-      }
-
-      window.sessionStorage.setItem(key, JSON.stringify(obj));
+      element.style.visibility = newVisibility;
     }
   })
+}
+
+function toggleVisibility(visibility){
+  var newVisibility = 'hidden';
+  if(visibility === 'hidden'){
+    newVisibility = 'visible';
+  }
+  return newVisibility;
+}
+
+function getImageUrl(visibility){
+  var path = 'images/expandButton.png';
+  if(visibility === 'visible'){
+    path = 'images/closeButton.png';
+  }
+  return chrome.runtime.getURL(path);
 }
 
 function createDialog(key, loaded){
@@ -332,17 +352,16 @@ function createTriangle(key){
   return smallTriangle;
 }
 
-function createExpandButton(key){
-  const buttonID = key;
+function createButton(key){
+  const visibility = getVisibility(key);
   var expandButton = document.createElement('input');
-  var imageUrl = chrome.runtime.getURL('images/expandButton.png')
+  var imageUrl = getImageUrl(visibility);
   expandButton.style.height = '25px';
   expandButton.style.width = '25px';
-  expandButton.setAttribute('id', buttonID);
+  expandButton.setAttribute('id', key);
   expandButton.setAttribute('type', 'image');
   expandButton.setAttribute('src', imageUrl);
   expandButton.setAttribute('class', 'expand_button');
-  //$(expandButton).click(myFunction);
   return expandButton
 }
 
