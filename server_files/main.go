@@ -32,9 +32,17 @@ type Log struct {
 	User_id string
 }
 
+type Sentences struct {
+	ID bson.ObjectId `bson:"_id,omitempty"`
+	User_id string 
+	Switch string
+	Article_url string
+}
+
 
 var user_collection *mgo.Collection 
 var logging_data *mgo.Collection
+var sentences_toggle *mgo.Collection
 
 // formatRequest generates ascii representation of a request (for debugging purposes)
 func formatRequest(r *http.Request) string {
@@ -141,6 +149,7 @@ func metadataHandler(w http.ResponseWriter, r *http.Request) {
 func topSentenceHandler(w http.ResponseWriter, r *http.Request) {
 	if (r.Method == "GET") {
 		article_url := r.FormValue("article_url")
+		user_id := r.FormValue("user_id")
 		/*if (strings.Compare(r.FormValue("source"), "facebook")) {
 			article_url = article_url[len("https://l.facebook.com/l.php?u="):]
 		}*/
@@ -149,7 +158,7 @@ func topSentenceHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Please pass in an article_url", http.StatusBadRequest)
 		} else {
 			w.Header().Set("Content-Type", "application/json")
-			request_body := retrieveTopSentences(article_url) 
+			request_body := retrieveTopSentences(article_url, user_id) 
 			json.NewEncoder(w).Encode(request_body)
 		}
 	} else {
@@ -190,6 +199,12 @@ func processLog(w http.ResponseWriter, r *http.Request) {
 	insertLog(user_id, url, log_type)
 }
 
+func switchOff(w http.ResponseWriter, r *http.Request) { 
+	user_id := r.FormValue("user_id")
+	article_url := r.FormValue("article_url")
+	sentences_toggle.Insert(&Sentences{User_id: user_id, Switch: "Off", Article_url: article_url})
+}
+
 func main() {
 	mux := http.NewServeMux() 
 
@@ -200,6 +215,7 @@ func main() {
 	mux.HandleFunc("/is_news_article", isNewsArticleHandler)
 	mux.HandleFunc("/get_articles", getNewsArticles)
 	mux.HandleFunc("/logging", processLog)
+	mux.HandleFunc("/switch_off", switchOff)
 	mux.Handle("/", http.FileServer(http.Dir("../highlight_webpage")))
 	
 
@@ -212,10 +228,9 @@ func main() {
 
 	user_collection = session.DB("user_info").C("highlights")
 	logging_data = session.DB("user_info").C("data_logs")
+	sentences_toggle = session.DB("user_info").C("sentences")
 	fmt.Printf("Serving web pages on port 80...\n")
 
 	handler := cors.Default().Handler(mux)
-
-	error := http.ListenAndServe(":8080", handler)
-	fmt.Println(error) 
+	error := http.ListenAndServe(":80", handler)
 }
