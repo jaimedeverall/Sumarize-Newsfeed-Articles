@@ -251,21 +251,22 @@ function resizeDialog(dialog, loaded){
     const children = $(dialog).children();
     const metricsDiv = children.get(0);
     const summaryDiv = children.get(1);
-    const newHeight = $(summaryDiv).height() + $(metricsDiv).height();
+    const brandDiv = children.get(2); 
+    const newHeight = $(summaryDiv).height() + $(metricsDiv).height() + $(brandDiv).height() * 2;
     $(dialog).css({height: `${newHeight}px`});
   }
 }
 
 function positionExpandButton(expandButton, position){
-  $(expandButton).css({left: position.left - 30, top: position.top - 3})
+  $(expandButton).css({left: position.left - 60, top: position.top - 3})
 }
 
 function positionDialog(dialog, position){
-  $(dialog).css({left: position.left - 52, top: position.top + 26})
+  $(dialog).css({left: position.left - 60, top: position.top + 30})
 }
 
 function positionTriangle(triangle, position){
-  $(triangle).css({left: position.left - 24, top: position.top + 20})
+  $(triangle).css({left: position.left - 50, top: position.top + 25})
 }
 
 function handleExpandButtonClick(event, key, button){
@@ -294,9 +295,9 @@ function toggleVisibility(visibility){
 }
 
 function getImageUrl(visibility){
-  var path = 'images/expandButton.png';
+  var path = 'images/open.png';
   if(visibility === 'visible'){
-    path = 'images/closeButton.png';
+    path = 'images/close.png';
   }
   return chrome.runtime.getURL(path);
 }
@@ -328,19 +329,29 @@ function createDialog(key, loaded){
   $(list).css("list-style-type", "disc")
   $(list).css("list-style-position", "inside")
   $(list).css('padding-left', '10px')
-  console.log("recap: " + recap)
+
+  var stamp = document.createElement('p')
+  stamp.innerHTML = "<span> Made with &hearts; by Gist. </span>"
+  $(stamp).css('padding-left', '10px')
+  $(stamp).css('color', '#4468B0')
+  $(stamp).css('font-size', '14px')
+  $(stamp).css('line-height', '1.38')
 
   for (var i = 0; i < recap.length; i++) { 
     if (recap[i].length == 0) {
       continue
     }
     var element = document.createElement('li')
-    element.innerHTML = recap[i] + "<br/><br/>"
+    element.innerHTML = recap[i]
+    if (i < recap.length - 1) {
+       element.innerHTML += "<br/><br/>" 
+    }
     list.appendChild(element)
   }
 
   dialog.appendChild(metricsDiv);
   dialog.appendChild(list)
+  dialog.appendChild(stamp)
   return dialog
 }
 
@@ -356,8 +367,8 @@ function createButton(key){
   const visibility = getVisibility(key);
   var expandButton = document.createElement('input');
   var imageUrl = getImageUrl(visibility);
-  expandButton.style.height = '25px';
-  expandButton.style.width = '25px';
+  expandButton.style.height = '30px';
+  expandButton.style.width = '51px';
   expandButton.setAttribute('id', key);
   expandButton.setAttribute('type', 'image');
   expandButton.setAttribute('src', imageUrl);
