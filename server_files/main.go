@@ -232,6 +232,5 @@ func main() {
 	fmt.Printf("Serving web pages on port 80...\n")
 
 	handler := cors.Default().Handler(mux)
-
 	error := http.ListenAndServe(":80", handler)
 }
