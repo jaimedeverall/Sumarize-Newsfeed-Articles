@@ -93,6 +93,7 @@ function findNewsLink(){
 
 //This function is not used.
 function getNewsUrl(storyOptionsElement){
+  //I don't like this code, it's janky and may break!
   var overall = $(storyOptionsElement).parent().parent().parent().get(0);
   if(overall === undefined){
     return null;

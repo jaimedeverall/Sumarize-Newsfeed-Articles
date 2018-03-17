@@ -231,6 +231,6 @@ func main() {
 	sentences_toggle = session.DB("user_info").C("sentences")
 	fmt.Printf("Serving web pages on port 80...\n")
 
-	handler := cors.Default().Handler(mux)
-	error := http.ListenAndServe(":80", handler)
+	//handler := cors.Default().Handler(mux)
+	//error := http.ListenAndServe(":80", handler)
 }
