@@ -160,19 +160,19 @@ function addButtonsAndDialogs() {
     
     var a = findLinkElement(element);
 
-    if(a === undefined || storyOptions === undefined){
+    if(a === undefined){
       return;
     }
 
     const url = a.getAttribute('href');
 
+    if(url === undefined || url === null){
+      return;
+    }
+
     var div = linkOnclick(element)
     div.onclick = function(e) {
       sendLoggingRequest(url, "click_through") 
-    }
-
-    if(url === undefined || url === null){
-      return;
     }
 
     const key = identifier + url;
