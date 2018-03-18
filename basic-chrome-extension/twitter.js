@@ -149,8 +149,8 @@ function addButtonsAndDialogs() {
     if(existingObj === null){
       var newObj = {visibility: 'hidden', loaded: false};
       window.sessionStorage.setItem(key, JSON.stringify(newObj));
-      getFinalUrl(url);
-      //saveDetails(key, url);
+      //getFinalUrl(url);
+      saveDetails(key, url);
     }else{
       visibility = existingObj.visibility;
       loaded = existingObj.loaded;
