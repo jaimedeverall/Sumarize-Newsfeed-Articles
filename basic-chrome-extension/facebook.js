@@ -74,51 +74,6 @@ function elementClicked(x, y, element){
   return x >= elementLeft && x <= elementRight && y >= elementTop && y <= elementBottom;
 }
 
-//This function is not used.
-function findNewsLink(){
-  $("a[aria-label='Story options']").each(function(index, element){
-    if(isElementInViewport(element)){
-      var overall = $(element).parent().parent().parent().get(0);
-      var newsLinkElement = $(overall).find("a[class='_52c6']").get(0)
-      if(newsLinkElement !== undefined){
-        const url = newsLinkElement.href
-        if(isNews(url)){
-          console.log(element)
-          console.log(url)
-        }
-      }
-    }
-  })
-}
-
-//This function is not used.
-function getNewsUrl(storyOptionsElement){
-  //I don't like this code, it's janky and may break!
-  var overall = $(storyOptionsElement).parent().parent().parent().get(0);
-  if(overall === undefined){
-    return null;
-  }
-  var newsLinkElement = $(overall).find("a[class='_52c6']").get(0)
-  if(newsLinkElement === undefined){
-    return null;
-  }
-  const url = newsLinkElement.href
-  if(url !== undefined){
-    return url
-  }
-  return null
-}
-
-//This function is not used.
-function isNewsCard(storyOptionsElement){
-  var overall = $(storyOptionsElement).parent().parent().parent().get(0);
-  var newsLinkElement = $(overall).find("a[class='_52c6']").get(0)
-  if(newsLinkElement !== undefined){
-    return true
-  }
-  return false
-}
-
 function saveDetails(key, url){
   var details = {"source": "facebook", "article_url": url}
   chrome.runtime.sendMessage({endpoint: "summary", request_type: "GET", parameters: details}, function(response) {
@@ -237,13 +192,8 @@ function findLinkElement(element){
   return a
 }
 
-function linkOnclick(element) {
+function linkOnclick(element){
   var div = $(element).find("._3x-2").get(0);
-  if (div !== undefined) {
-    console.log("defined")
-  } else {
-    console.log("undefined")
-  }
   return div
 }
 

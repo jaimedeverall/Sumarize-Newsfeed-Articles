@@ -191,11 +191,9 @@ function getVisibility(key){
   return visibility;
 }
 
-function linkOnclick(element) {
+function linkOnclick(element){
   var div = $(element).find(".js-media-container").get(0);
-  if (div !== undefined){
-    return div
-  }
+  return div;
 }
 
 function resizeDialog(dialog, loaded){
@@ -210,15 +208,15 @@ function resizeDialog(dialog, loaded){
 }
 
 function positionExpandButton(expandButton, position){
-  $(expandButton).css({left: position.left - 60, top: position.top - 3})
+  $(expandButton).css({left: position.left - 55, top: position.top - 8})
 }
 
 function positionDialog(dialog, position){
-  $(dialog).css({left: position.left - 60, top: position.top + 30})
+  $(dialog).css({left: position.left - 400, top: position.top + 26})
 }
 
 function positionTriangle(triangle, position){
-  $(triangle).css({left: position.left - 50, top: position.top + 25})
+  $(triangle).css({left: position.left - 45, top: position.top + 21})
 }
 
 function handleExpandButtonClick(event, key, button){
@@ -319,8 +317,8 @@ function createButton(key){
   const visibility = getVisibility(key);
   var expandButton = document.createElement('input');
   var imageUrl = getImageUrl(visibility);
-  expandButton.style.height = '30px';
-  expandButton.style.width = '51px';
+  expandButton.style.height = '25px';
+  expandButton.style.width = '43px';
   expandButton.setAttribute('id', key);
   expandButton.setAttribute('type', 'image');
   expandButton.setAttribute('src', imageUrl);
