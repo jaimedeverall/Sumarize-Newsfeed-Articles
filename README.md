@@ -41,6 +41,7 @@ Week 6: https://quip.com/53I9A1KIABBY
 Week 7: https://quip.com/PYdCAIrpwWaj   
 Week 8: https://quip.com/YRf7A4DE69aw    
 Week 9: https://quip.com/IEukAqZNtwqj
+Week 10 + Launch: https://quip.com/MObkAAH0j7y9
 
 # Team Communication:
 1. We are communicating internally through Facebook messenger. 

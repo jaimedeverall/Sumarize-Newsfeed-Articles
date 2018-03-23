@@ -31,7 +31,8 @@ chrome.runtime.sendMessage({get_open_tab_url: true}, function(response) {
     return;
   }
 
-  if(is_news_article(url, false)){
+  if(is_news_article(url, false)){//&& document.URL === url
+    console.log('is_news_article', url);
     process(url);
     setToggleStatus(true, url);
     addHighlightsButton(url);
